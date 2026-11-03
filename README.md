@@ -1,58 +1,218 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Arsip QR Code Ruang Arsip
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi manajemen arsip dokumen berbasis **QR Code** untuk ruang arsip internal kantor, dibangun dengan **Laravel 12 (PHP 8.4)**, **Inertia.js v2**, **Vue 3 (Composition API `<script setup>`)**, dan **Tailwind CSS**.
 
-## About Laravel
+Aplikasi dirancang **offline-ready / internal network ready** (tanpa ketergantungan CDN eksternal, font dan ikon SVG di-bundle lokal), dengan desain **mobile-first** untuk pemindaian label bantex langsung dari smartphone petugas di ruang arsip.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📌 Fitur Utama
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1. **Halaman Scan Publik (`GET /b/{slug}`)**:
+   - Menampilkan kode bantex, posisi rak (Rak, Baris, Posisi Bantex, dan panduan teks cara baca), daftar dokumen di dalamnya, dan status.
+   - **Status Tersedia**: Form peminjaman langsung (input Nama Peminjam & Keperluan wajib diisi).
+   - **Status Sedang Dipinjam**: Menampilkan identitas peminjam, keperluan, tanggal & lama hari peminjaman, serta tombol pengembalian berkonfirmasi modal.
+   - **Keamanan Konkurensi Database**: Transaksi `DB::transaction` dengan `lockForUpdate()` untuk mencegah race condition (peminjaman ganda saat dua orang scan bersamaan).
+   - **Rate Limiting**: Pembatasan request submission (`throttle:20,1`).
 
-## Learning Laravel
+2. **Pencarian Publik Dokumen (`GET /cari`)**:
+   - Satu kolom pencarian cerdas untuk: Nomor Pengadaan (`Sxxxxxx`), Uraian Nama Pengadaan, Tahun, Kode Bantex, serta Lokasi Rak.
+   - Menampilkan lokasi detail tempat dokumen disimpan dan status ketersediaannya.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+3. **Dashboard Monitoring Admin (`GET /admin`)**:
+   - Statistik real-time: Total Bantex, Tersedia di Rak, Sedang Dipinjam, dan Terlambat (`> 7 hari`).
+   - Tabel monitoring ketersediaan bantex beserta nama peminjam aktif.
+   - Fitur **Pengembalian Manual** oleh admin jika peminjam lupa melakukan scan QR pengembalian.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+4. **Master Data CRUD Bantex & Dokumen (`/admin/bantex`)**:
+   - Penambahan dan pembaruan bantex beserta formulir dinamis daftar berkas dokumen di dalamnya.
+   - Pembuatan slug aman URL otomatis dari kode bantex (`SCM/GP/R-01/01/HCGA/GA/02` -> `SCM-GP-R-01-01-HCGA-GA-02`).
+   - Proteksi integritas data: Pencegahan penghapusan bantex yang sedang berstatus dipinjam.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+5. **Riwayat Peminjaman & Export CSV (`/admin/riwayat-peminjaman`)**:
+   - Log lengkap seluruh transaksi peminjaman dan pengembalian.
+   - Filter berdasarkan kata kunci peminjam/keperluan, spesifik bantex, rentang tanggal, dan status peminjaman.
+   - Fitur **Export CSV** (dengan header UTF-8 BOM untuk kompatibilitas sempurna Microsoft Excel).
 
-## Agentic Development
+6. **Generator QR Code & Cetak Label Siap Potong**:
+   - QR Code di-generate di backend dalam format SVG murni (Error Correction Level M).
+   - Cetak satuan per bantex atau cetak massal (batch) sekaligus.
+   - Layout cetak `@media print` dengan garis putus-putus panduan potong, ukuran font lokasi besar, dan QR Code kontras tinggi.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+7. **Middleware Pembatasan IP Internal (Opsional)**:
+   - Pembatasan akses halaman publik via konfigurasi `.env` (`ALLOWED_IP_RANGES`).
+   - Mendukung IP tunggal maupun format subnet CIDR (contoh: `192.168.1.0/24,10.0.0.0/8`). Jika dikosongkan, middleware non-aktif.
+
+---
+
+## 🔐 Kredensial Akun Admin Bawaan (Seeder)
+
+Setelah menjalankan database seeder, akun admin default dapat digunakan untuk masuk ke sistem:
+
+- **URL Login Admin**: `/login` atau `/admin`
+- **Email**: `admin@arsip.internal`
+- **Password**: `password123`
+
+> ⚠️ **PENTING SAAT PRODUKSI:** Segera ganti password atau buat akun admin baru melalui menu profil admin sebelum aplikasi digunakan di lingkungan produksi!
+
+---
+
+## 💻 Panduan Instalasi Lokal (Development)
+
+### 1. Prasyarat Sistem
+- PHP `>= 8.2` (disarankan PHP `8.4`) dengan ekstensi: `pdo_mysql`, `pdo_sqlite`, `gd`, `mbstring`, `openssl`, `curl`, `dom`, `zip`.
+- Composer `>= 2.2`
+- Node.js `>= 18` & NPM
+
+### 2. Langkah Instalasi
 
 ```bash
-composer require laravel/boost --dev
+# 1. Clone atau masuk ke direktori proyek
+cd c:\QR-Arsip\QR-RuangArsip
 
-php artisan boost:install
+# 2. Instal dependensi PHP
+composer install
+
+# 3. Instal dependensi frontend
+npm install
+
+# 4. Salin file konfigurasi environment
+cp .env.example .env
+
+# 5. Generate Application Key
+php artisan key:generate
+
+# 6. Konfigurasi Database di .env
+# Untuk pengembangan cepat lokal (default SQLite):
+# DB_CONNECTION=sqlite
+
+# Atau jika menggunakan MySQL / MariaDB lokal:
+# DB_CONNECTION=mysql
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=qr_ruang_arsip
+# DB_USERNAME=root
+# DB_PASSWORD=password_anda
+
+# 7. Jalankan Migrasi & Seeder Data Awal
+php artisan migrate:fresh --seed
+
+# 8. Build aset frontend
+npm run build
+
+# 9. Jalankan server lokal
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Akses aplikasi di browser:
+- Halaman Scan / Cari Publik: `http://localhost:8000/cari`
+- Halaman Login Admin: `http://localhost:8000/login`
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 🚀 Panduan Deployment ke Server Internal Kantor
 
-## Code of Conduct
+Untuk deployment di server internal kantor (Ubuntu/Debian Server atau Windows Server):
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 1. Instalasi Dependensi Produksi (Tanpa Dev Tools)
+```bash
+composer install --no-dev --optimize-autoloader
+npm ci
+npm run build
+```
 
-## Security Vulnerabilities
+### 2. Konfigurasi File `.env` Produksi
+Pastikan pengaturan berikut pada file `.env` di server:
+```env
+APP_NAME="Sistem Arsip QR Code"
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=http://arsip.kantor.internal  # Sesuaikan IP/domain internal server
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Konfigurasi Database MySQL/MariaDB Server
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=qr_ruang_arsip
+DB_USERNAME=user_arsip
+DB_PASSWORD=password_kuat_database
 
-## License
+# Pembatasan IP WiFi Kantor (Opsional, kosongkan jika dibatasi di level router/firewall)
+ALLOWED_IP_RANGES=192.168.10.0/24,192.168.20.0/24
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Batas Keterlambatan Peminjaman (Default 7 hari)
+LOAN_DUE_DAYS=7
+```
+
+### 3. Migrasi Database Produksi
+```bash
+php artisan migrate --force
+# (Opsional) Jalankan seeder admin jika database baru:
+php artisan db:seed --class=AdminUserSeeder --force
+```
+
+### 4. Optimasi Cache Laravel
+Jalankan perintah cache produksi untuk performa maksimal:
+```bash
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+### 5. Izin Folder (Permissions)
+Pastikan web server (Nginx/Apache) memiliki hak akses tulis ke folder `storage` dan `bootstrap/cache`:
+```bash
+chmod -R 775 storage bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache
+```
+
+### 6. Contoh Konfigurasi Virtual Host Nginx
+Arahkan `root` web server langsung ke direktori **`public`**:
+
+```nginx
+server {
+    listen 80;
+    server_name arsip.kantor.internal; # Atau IP internal: 192.168.1.100
+    root /var/www/qr-ruangarsip/public;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options "nosniff";
+
+    index index.php;
+    charset utf-8;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    error_page 404 /index.php;
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php8.4-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+        fastcgi_hide_header X-Powered-By;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}
+```
+
+---
+
+## 🧪 Menjalankan Pengujian Otomatis (Testing)
+
+Proyek ini dilengkapi dengan 53 automated test (menggunakan Pest PHP) mencakup pengujian fungsional database locking, CRUD admin, pencarian publik, validasi, dan pembatasan IP:
+
+```bash
+php artisan test
+```
+
+Hasil uji:
+- **53 passed tests** (100%)
+- **251 assertions**
