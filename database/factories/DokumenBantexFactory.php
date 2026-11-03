@@ -7,7 +7,7 @@ use App\Models\DokumenBantex;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\DokumenBantex>
+ * @extends Factory<DokumenBantex>
  */
 class DokumenBantexFactory extends Factory
 {
@@ -16,12 +16,13 @@ class DokumenBantexFactory extends Factory
     public function definition(): array
     {
         $year = fake()->numberBetween(2022, 2026);
+        $shortYear = sprintf('%02d', $year % 100);
         $randomNum = fake()->numberBetween(10000, 99999);
         $char = fake()->randomElement(['A', 'B', 'C', 'X', 'Y']);
 
         return [
             'bantex_id' => Bantex::factory(),
-            'no_pengadaan' => "S{$year % 100}{$randomNum}{$char}",
+            'no_pengadaan' => "S{$shortYear}{$randomNum}{$char}",
             'nama_pengadaan' => fake()->randomElement([
                 'Pengadaan Material Atap Galvalum',
                 'Pengadaan Rangka Baja Ringan Truss',
@@ -37,4 +38,3 @@ class DokumenBantexFactory extends Factory
         ];
     }
 }
-

@@ -20,4 +20,3 @@ return [
         array_map('trim', explode(',', env('ALLOWED_IP_RANGES', '')))
     )),
 ];
-

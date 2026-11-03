@@ -24,4 +24,3 @@ class DokumenBantex extends Model
         return $this->belongsTo(Bantex::class, 'bantex_id');
     }
 }
-

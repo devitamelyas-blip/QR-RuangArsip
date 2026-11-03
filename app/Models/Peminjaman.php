@@ -48,6 +48,7 @@ class Peminjaman extends Model
                     return false;
                 }
                 $dueDays = (int) config('arsip.loan_due_days', 7);
+
                 return $this->tanggal_pinjam ? $this->tanggal_pinjam->copy()->addDays($dueDays)->isPast() : false;
             }
         );
@@ -58,9 +59,9 @@ class Peminjaman extends Model
         return Attribute::make(
             get: function (): int {
                 $endDate = $this->tanggal_kembali ?? Carbon::now();
+
                 return $this->tanggal_pinjam ? (int) $this->tanggal_pinjam->diffInDays($endDate) : 0;
             }
         );
     }
 }
-

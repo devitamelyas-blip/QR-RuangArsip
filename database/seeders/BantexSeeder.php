@@ -3,8 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Bantex;
-use App\Models\DokumenBantex;
-use App\Models\Peminjaman;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
@@ -150,4 +148,3 @@ class BantexSeeder extends Seeder
         }
     }
 }
-

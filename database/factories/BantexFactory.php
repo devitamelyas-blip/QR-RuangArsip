@@ -6,7 +6,7 @@ use App\Models\Bantex;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Bantex>
+ * @extends Factory<Bantex>
  */
 class BantexFactory extends Factory
 {
@@ -42,4 +42,3 @@ class BantexFactory extends Factory
         ]);
     }
 }
-

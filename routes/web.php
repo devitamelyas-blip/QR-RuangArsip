@@ -1,21 +1,29 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\Public\ScanController;
+use App\Http\Controllers\Public\SearchController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
+// Redirect halaman utama langsung ke halaman pencarian arsip
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return redirect()->route('public.search');
 });
 
+// Halaman Publik: Scan QR Code Bantex
+Route::get('/b/{slug}', [ScanController::class, 'show'])->name('public.scan');
+Route::post('/b/{slug}/pinjam', [ScanController::class, 'borrow'])
+    ->middleware('throttle:20,1')
+    ->name('public.scan.borrow');
+Route::post('/b/{slug}/kembali', [ScanController::class, 'returnBantex'])
+    ->middleware('throttle:20,1')
+    ->name('public.scan.return');
+
+// Halaman Publik: Pencarian Dokumen & Lokasi
+Route::get('/cari', [SearchController::class, 'index'])->name('public.search');
+
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return redirect()->route('admin.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

@@ -7,7 +7,7 @@ use App\Models\Peminjaman;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Peminjaman>
+ * @extends Factory<Peminjaman>
  */
 class PeminjamanFactory extends Factory
 {
@@ -30,10 +30,10 @@ class PeminjamanFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             $pinjam = $attributes['tanggal_pinjam'] ?? now()->subDays(3);
+
             return [
                 'tanggal_kembali' => fake()->dateTimeBetween($pinjam, 'now'),
             ];
         });
     }
 }
-

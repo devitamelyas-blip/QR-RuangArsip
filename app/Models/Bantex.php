@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Str;
 
 class Bantex extends Model
 {
@@ -28,7 +27,7 @@ class Bantex extends Model
     protected static function booted(): void
     {
         static::saving(function (Bantex $bantex) {
-            if (!empty($bantex->kode_bantex) && empty($bantex->slug)) {
+            if (! empty($bantex->kode_bantex) && empty($bantex->slug)) {
                 $bantex->slug = static::generateSlug($bantex->kode_bantex);
             }
         });
@@ -40,6 +39,7 @@ class Bantex extends Model
     public static function generateSlug(string $kodeBantex): string
     {
         $cleaned = preg_replace('/[^A-Za-z0-9\-]+/', '-', $kodeBantex);
+
         return trim(preg_replace('/-+/', '-', $cleaned), '-');
     }
 
@@ -70,4 +70,3 @@ class Bantex extends Model
         return $this->status === 'dipinjam';
     }
 }
-
