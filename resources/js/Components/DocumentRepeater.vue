@@ -21,7 +21,6 @@
       </button>
     </div>
 
-    <!-- Empty State -->
     <div
       v-if="modelValue.length === 0"
       class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center text-xs text-slate-400"
@@ -29,7 +28,6 @@
       Belum ada dokumen yang ditambahkan. Klik tombol "Tambah Baris Dokumen" di atas.
     </div>
 
-    <!-- Document Rows List -->
     <div v-else class="space-y-2.5">
       <div
         v-for="(doc, idx) in modelValue"
@@ -40,7 +38,6 @@
           {{ idx + 1 }}
         </span>
 
-        <!-- No Pengadaan -->
         <div class="w-full sm:w-44 shrink-0">
           <label class="block text-[10px] font-semibold text-slate-500 mb-0.5 sm:hidden">
             No Pengadaan
@@ -54,7 +51,6 @@
           />
         </div>
 
-        <!-- Nama Pengadaan -->
         <div class="w-full flex-1">
           <label class="block text-[10px] font-semibold text-slate-500 mb-0.5 sm:hidden">
             Nama Pengadaan
@@ -68,7 +64,6 @@
           />
         </div>
 
-        <!-- Tahun -->
         <div class="w-full sm:w-24 shrink-0">
           <label class="block text-[10px] font-semibold text-slate-500 mb-0.5 sm:hidden">
             Tahun
@@ -82,7 +77,6 @@
           />
         </div>
 
-        <!-- Delete Button -->
         <button
           type="button"
           @click="removeDocument(idx)"
@@ -119,4 +113,3 @@ function removeDocument(index) {
   emit('update:modelValue', updated);
 }
 </script>
-

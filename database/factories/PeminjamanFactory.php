@@ -6,9 +6,6 @@ use App\Models\Bantex;
 use App\Models\Peminjaman;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<Peminjaman>
- */
 class PeminjamanFactory extends Factory
 {
     protected $model = Peminjaman::class;

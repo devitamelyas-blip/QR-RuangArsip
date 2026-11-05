@@ -78,7 +78,7 @@ const props = defineProps({
   },
   variant: {
     type: String,
-    default: 'emerald', // 'emerald', 'rose', 'indigo'
+    default: 'emerald',
   },
   loading: {
     type: Boolean,

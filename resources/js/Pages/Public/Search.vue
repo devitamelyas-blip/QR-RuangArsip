@@ -3,7 +3,6 @@
     <Head title="Pencarian Dokumen & Lokasi Arsip" />
 
     <div class="space-y-5 pb-8">
-      <!-- Search Banner & Input -->
       <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
         <h2 class="text-lg font-bold text-slate-900 mb-1">
           Cari Dokumen Pengadaan
@@ -36,7 +35,6 @@
           </div>
         </form>
 
-        <!-- Quick filter chips / hints -->
         <div class="flex flex-wrap items-center gap-1.5 mt-3 text-[11px] text-slate-500">
           <span class="font-medium">Contoh:</span>
           <button
@@ -70,7 +68,6 @@
         </div>
       </div>
 
-      <!-- Hasil Pencarian -->
       <div v-if="results !== null" class="space-y-3">
         <div class="flex items-center justify-between px-1">
           <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">
@@ -82,7 +79,6 @@
           </span>
         </div>
 
-        <!-- Jika tidak ditemukan -->
         <div
           v-if="results.data.length === 0"
           class="bg-white rounded-2xl p-8 border border-slate-200 text-center shadow-xs"
@@ -100,7 +96,6 @@
           </p>
         </div>
 
-        <!-- Daftar Hasil Dokumen -->
         <div v-else class="space-y-3">
           <div
             v-for="item in results.data"
@@ -122,13 +117,11 @@
                 </h4>
               </div>
 
-              <!-- Status Bantex -->
               <div v-if="item.bantex" class="shrink-0">
                 <StatusBadge :status="item.bantex.status" />
               </div>
             </div>
 
-            <!-- Detail Lokasi Bantex -->
             <div v-if="item.bantex" class="mt-3 pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div class="text-xs text-slate-600 space-y-1">
                 <div class="flex items-center space-x-1.5 font-mono text-[11px] font-bold text-slate-800">
@@ -154,12 +147,10 @@
             </div>
           </div>
 
-          <!-- Pagination -->
           <Pagination :links="results.links" />
         </div>
       </div>
 
-      <!-- State awal saat belum mencari -->
       <div
         v-else
         class="bg-white rounded-2xl p-8 border border-slate-200 text-center shadow-xs"
@@ -214,4 +205,3 @@ function quickSearch(keyword) {
   performSearch();
 }
 </script>
-

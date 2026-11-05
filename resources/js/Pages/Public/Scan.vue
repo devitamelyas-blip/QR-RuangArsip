@@ -3,7 +3,6 @@
     <Head :title="`Bantex ${bantex.kode_bantex}`" />
 
     <div class="space-y-5 pb-8">
-      <!-- Top Card: Header Kode Bantex & Status -->
       <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-200">
         <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
           <div class="min-w-0">
@@ -20,7 +19,6 @@
           />
         </div>
 
-        <!-- Detail Lokasi Grid -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-3 border-t border-slate-100 text-xs">
           <div class="bg-slate-50 rounded-xl p-2.5">
             <span class="text-slate-500 block text-[10px] uppercase font-bold">Tim</span>
@@ -40,7 +38,6 @@
           </div>
         </div>
 
-        <!-- Cara Baca Lokasi -->
         <div v-if="bantex.keterangan_lokasi" class="mt-3 text-xs text-slate-600 bg-blue-50/70 border border-blue-100/80 rounded-xl p-2.5 flex items-start space-x-2">
           <svg class="w-4 h-4 text-blue-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -52,7 +49,6 @@
         </div>
       </div>
 
-      <!-- Card: Informasi Peminjam Aktif (JIKA STATUS DIPINJAM) -->
       <div
         v-if="bantex.status === 'dipinjam' && bantex.peminjaman_aktif"
         class="bg-amber-50/80 rounded-2xl p-5 border border-amber-200/90 shadow-xs"
@@ -90,7 +86,6 @@
           </div>
         </div>
 
-        <!-- Tombol Kembalikan -->
         <div class="mt-4">
           <button
             type="button"
@@ -108,7 +103,6 @@
         </div>
       </div>
 
-      <!-- Card: Form Pinjam (JIKA STATUS TERSEDIA) -->
       <div
         v-if="bantex.status === 'tersedia'"
         class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs"
@@ -126,7 +120,6 @@
         </div>
 
         <form @submit.prevent="submitBorrow" class="space-y-4">
-          <!-- Kode Bantex (Read-only) -->
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">
               Kode Bantex (Otomatis)
@@ -140,7 +133,6 @@
             />
           </div>
 
-          <!-- Input Nama Peminjam -->
           <div>
             <label for="nama_peminjam" class="block text-xs font-semibold text-slate-700 mb-1">
               Nama Lengkap Peminjam <span class="text-rose-600">*</span>
@@ -159,7 +151,6 @@
             </p>
           </div>
 
-          <!-- Input Keperluan -->
           <div>
             <label for="keperluan" class="block text-xs font-semibold text-slate-700 mb-1">
               Keperluan Peminjaman <span class="text-rose-600">*</span>
@@ -178,7 +169,6 @@
             </p>
           </div>
 
-          <!-- Tombol Submit Pinjam -->
           <button
             type="submit"
             :disabled="borrowForm.processing"
@@ -201,7 +191,6 @@
         </form>
       </div>
 
-      <!-- Card: Daftar Dokumen di dalam Bantex -->
       <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
         <div class="flex items-center justify-between mb-3">
           <h3 class="text-sm font-bold text-slate-900 flex items-center">
@@ -246,7 +235,6 @@
       </div>
     </div>
 
-    <!-- Modal Konfirmasi Pengembalian -->
     <ConfirmModal
       :show="showReturnModal"
       title="Konfirmasi Pengembalian Bantex"
@@ -302,4 +290,3 @@ function submitReturn() {
   });
 }
 </script>
-

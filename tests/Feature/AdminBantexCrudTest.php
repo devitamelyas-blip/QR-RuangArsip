@@ -105,15 +105,12 @@ test('admin dapat memperbarui bantex dan sinkronisasi daftar dokumen', function 
         'urutan_bantex' => 'Bantex 01',
         'keterangan_lokasi' => 'Lokasi Diperbarui',
         'dokumen' => [
-            // Perbarui doc1
             [
                 'id' => $doc1->id,
                 'no_pengadaan' => 'DOC-BARU-1',
                 'nama_pengadaan' => 'Nama Dokumen Diperbarui',
                 'tahun' => '2026',
             ],
-            // doc2 dihapus (tidak disertakan)
-            // Tambah doc3 baru
             [
                 'no_pengadaan' => 'DOC-BARU-3',
                 'nama_pengadaan' => 'Dokumen Tambahan Ketiga',
@@ -157,4 +154,3 @@ test('admin dapat menghapus bantex jika status tersedia', function () {
     $response->assertRedirect(route('admin.bantex.index'));
     $this->assertDatabaseMissing('bantex', ['id' => $bantex->id]);
 });
-

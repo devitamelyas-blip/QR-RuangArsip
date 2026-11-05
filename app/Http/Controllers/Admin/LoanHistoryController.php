@@ -13,9 +13,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LoanHistoryController extends Controller
 {
-    /**
-     * Tampilkan riwayat transaksi peminjaman.
-     */
     public function index(Request $request): Response
     {
         $dueDays = (int) config('arsip.loan_due_days', 7);
@@ -68,25 +65,25 @@ class LoanHistoryController extends Controller
                 'bantex' => $item->bantex ? [
                     'id' => $item->bantex->id,
                     'kode_bantex' => $item->bantex->kode_bantex,
-                    'slug' => $item->bantex->slug,
                     'tim' => $item->bantex->tim,
                     'nomor_rak' => $item->bantex->nomor_rak,
                     'baris' => $item->bantex->baris,
+                    'urutan_bantex' => $item->bantex->urutan_bantex,
+                    'keterangan_lokasi' => $item->bantex->keterangan_lokasi,
                 ] : null,
                 'nama_peminjam' => $item->nama_peminjam,
                 'keperluan' => $item->keperluan,
                 'tanggal_pinjam' => $item->tanggal_pinjam?->translatedFormat('d M Y, H:i'),
                 'tanggal_kembali' => $item->tanggal_kembali?->translatedFormat('d M Y, H:i'),
-                'is_returned' => $item->tanggal_kembali !== null,
-                'is_overdue' => $item->is_overdue,
                 'lama_pinjam_hari' => $item->lama_pinjam_hari,
+                'is_overdue' => $item->is_overdue,
             ]);
 
-        $availableBantex = Bantex::orderBy('kode_bantex')
-            ->get(['id', 'kode_bantex']);
+        $allBantex = Bantex::select('id', 'kode_bantex')->orderBy('kode_bantex')->get();
 
         return Inertia::render('Admin/Loans/Index', [
             'loans' => $loans,
+            'allBantex' => $allBantex,
             'filters' => [
                 'search' => $search,
                 'status' => $status,
@@ -94,14 +91,10 @@ class LoanHistoryController extends Controller
                 'date_from' => $dateFrom,
                 'date_to' => $dateTo,
             ],
-            'availableBantex' => $availableBantex,
-            'loanDueDays' => $dueDays,
+            'loan_due_days' => $dueDays,
         ]);
     }
 
-    /**
-     * Export data riwayat peminjaman ke format CSV.
-     */
     public function exportCsv(Request $request): StreamedResponse
     {
         $dueDays = (int) config('arsip.loan_due_days', 7);
@@ -152,10 +145,8 @@ class LoanHistoryController extends Controller
 
         return response()->streamDownload(function () use ($records) {
             $handle = fopen('php://output', 'w');
-            // Write UTF-8 BOM agar rapi di Microsoft Excel
             fwrite($handle, "\xEF\xBB\xBF");
 
-            // Header kolom CSV
             fputcsv($handle, [
                 'No',
                 'Kode Bantex',

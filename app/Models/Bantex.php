@@ -33,9 +33,6 @@ class Bantex extends Model
         });
     }
 
-    /**
-     * Generate URL-safe slug from kode_bantex (e.g. SCM/GP/R-01/01/HCGA/GA/02 -> SCM-GP-R-01-01-HCGA-GA-02).
-     */
     public static function generateSlug(string $kodeBantex): string
     {
         $cleaned = preg_replace('/[^A-Za-z0-9\-]+/', '-', $kodeBantex);

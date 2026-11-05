@@ -27,9 +27,7 @@
     </template>
 
     <div class="space-y-6">
-      <!-- 4 Stat Cards Grid -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Total Bantex -->
         <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs">
           <div class="flex items-center justify-between text-slate-500 mb-2">
             <span class="text-xs font-semibold uppercase tracking-wider">Total Bantex</span>
@@ -45,7 +43,6 @@
           <span class="text-[11px] text-slate-400 mt-1 block">Seluruh unit terdaftar</span>
         </div>
 
-        <!-- Tersedia -->
         <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs">
           <div class="flex items-center justify-between text-slate-500 mb-2">
             <span class="text-xs font-semibold uppercase tracking-wider text-emerald-700">Tersedia di Rak</span>
@@ -61,7 +58,6 @@
           <span class="text-[11px] text-slate-400 mt-1 block">Siap dipinjam</span>
         </div>
 
-        <!-- Sedang Dipinjam -->
         <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs">
           <div class="flex items-center justify-between text-slate-500 mb-2">
             <span class="text-xs font-semibold uppercase tracking-wider text-amber-700">Sedang Dipinjam</span>
@@ -77,7 +73,6 @@
           <span class="text-[11px] text-slate-400 mt-1 block">Dokumen di luar rak</span>
         </div>
 
-        <!-- Terlambat -->
         <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs">
           <div class="flex items-center justify-between text-slate-500 mb-2">
             <span class="text-xs font-semibold uppercase tracking-wider text-rose-700">Terlambat Pinjam</span>
@@ -94,7 +89,6 @@
         </div>
       </div>
 
-      <!-- Filter Bar -->
       <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
         <form @submit.prevent="applyFilters" class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
           <div class="flex-1 relative">
@@ -110,7 +104,6 @@
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
-            <!-- Filter Status -->
             <select
               v-model="filterForm.status"
               @change="applyFilters"
@@ -122,7 +115,6 @@
               <option value="terlambat">Hanya Terlambat</option>
             </select>
 
-            <!-- Filter Tim -->
             <select
               v-model="filterForm.tim"
               @change="applyFilters"
@@ -152,7 +144,6 @@
         </form>
       </div>
 
-      <!-- Monitoring Table -->
       <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse text-xs">
@@ -178,7 +169,6 @@
                 class="hover:bg-slate-50/70 transition"
                 :class="{ 'bg-amber-50/20': item.status === 'dipinjam' }"
               >
-                <!-- Kode Bantex -->
                 <td class="py-3.5 px-4 font-mono font-bold text-slate-900">
                   <Link :href="route('admin.bantex.edit', item.id)" class="hover:text-blue-600 hover:underline">
                     {{ item.kode_bantex }}
@@ -188,20 +178,17 @@
                   </span>
                 </td>
 
-                <!-- Lokasi Rak -->
                 <td class="py-3.5 px-4 text-slate-700">
                   <div class="font-semibold">{{ item.nomor_rak }}, {{ item.baris }}</div>
                   <div class="text-[11px] text-slate-500">{{ item.urutan_bantex }}</div>
                 </td>
 
-                <!-- Dokumen -->
                 <td class="py-3.5 px-4 text-slate-600">
                   <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-medium text-[11px]">
                     {{ item.dokumen_count }} berkas
                   </span>
                 </td>
 
-                <!-- Status -->
                 <td class="py-3.5 px-4">
                   <StatusBadge
                     :status="item.status"
@@ -209,7 +196,6 @@
                   />
                 </td>
 
-                <!-- Peminjam Saat Ini -->
                 <td class="py-3.5 px-4">
                   <div v-if="item.peminjaman_aktif" class="space-y-0.5">
                     <div class="font-bold text-slate-900">{{ item.peminjaman_aktif.nama_peminjam }}</div>
@@ -231,10 +217,8 @@
                   </span>
                 </td>
 
-                <!-- Aksi Cepat: Kembalikan Manual / Cetak / Scan -->
                 <td class="py-3.5 px-4 text-right">
                   <div class="flex items-center justify-end space-x-1.5">
-                    <!-- Tombol Kembalikan Manual (jika status dipinjam) -->
                     <button
                       v-if="item.status === 'dipinjam'"
                       type="button"
@@ -245,7 +229,6 @@
                       Kembalikan
                     </button>
 
-                    <!-- Cetak Label -->
                     <Link
                       :href="route('admin.labels.print-single', item.id)"
                       target="_blank"
@@ -257,7 +240,6 @@
                       </svg>
                     </Link>
 
-                    <!-- Scan Page Preview -->
                     <Link
                       :href="route('public.scan', item.slug)"
                       target="_blank"
@@ -275,14 +257,12 @@
           </table>
         </div>
 
-        <!-- Pagination -->
         <div class="p-4 border-t border-slate-200">
           <Pagination :links="bantexList.links" />
         </div>
       </div>
     </div>
 
-    <!-- Modal Konfirmasi Pengembalian Manual -->
     <ConfirmModal
       :show="showConfirmModal"
       title="Kembalikan Bantex Manual"
@@ -342,7 +322,6 @@ function resetFilters() {
   applyFilters();
 }
 
-// Modal Konfirmasi Manual Return
 const showConfirmModal = ref(false);
 const selectedBantex = ref(null);
 const manualReturnForm = useForm({});
@@ -363,4 +342,3 @@ function submitManualReturn() {
   });
 }
 </script>
-

@@ -39,4 +39,3 @@ test('admin dapat mencetak label secara massal', function () {
             ->has('labels', 2)
         );
 });
-

@@ -5,24 +5,25 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Bantex;
 use App\Models\Peminjaman;
+use App\Services\LoanService;
 use Carbon\Carbon;
+use DomainException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class DashboardController extends Controller
 {
-    /**
-     * Dashboard monitoring status bantex dan peminjaman.
-     */
+    public function __construct(
+        protected LoanService $loanService
+    ) {}
+
     public function index(Request $request): Response
     {
         $dueDays = (int) config('arsip.loan_due_days', 7);
         $overdueThreshold = Carbon::now()->subDays($dueDays);
 
-        // Ringkasan Statistik
         $totalBantex = Bantex::count();
         $totalTersedia = Bantex::where('status', 'tersedia')->count();
         $totalDipinjam = Bantex::where('status', 'dipinjam')->count();
@@ -30,7 +31,6 @@ class DashboardController extends Controller
             ->where('tanggal_pinjam', '<=', $overdueThreshold)
             ->count();
 
-        // Query tabel monitoring
         $search = trim((string) $request->input('search', ''));
         $statusFilter = $request->input('status', 'semua');
         $timFilter = $request->input('tim', 'semua');
@@ -111,33 +111,14 @@ class DashboardController extends Controller
         ]);
     }
 
-    /**
-     * Pengembalian manual bantex dari dashboard admin (untuk kasus peminjam lupa scan).
-     */
     public function returnManual(Request $request, Bantex $bantex): RedirectResponse
     {
-        return DB::transaction(function () use ($bantex) {
-            $lockedBantex = Bantex::where('id', $bantex->id)->lockForUpdate()->firstOrFail();
+        try {
+            $this->loanService->returnById($bantex->id);
 
-            if ($lockedBantex->status !== 'dipinjam') {
-                return back()->with('error', "Bantex {$lockedBantex->kode_bantex} sudah dalam status tersedia.");
-            }
-
-            $activeLoan = Peminjaman::where('bantex_id', $lockedBantex->id)
-                ->whereNull('tanggal_kembali')
-                ->latest('tanggal_pinjam')
-                ->first();
-
-            if ($activeLoan) {
-                $activeLoan->update([
-                    'tanggal_kembali' => Carbon::now(),
-                ]);
-            }
-
-            $lockedBantex->update(['status' => 'tersedia']);
-
-            return back()->with('success', "Bantex {$lockedBantex->kode_bantex} berhasil dikembalikan secara manual ke rak.");
-        });
+            return back()->with('success', "Bantex {$bantex->kode_bantex} berhasil dikembalikan secara manual ke rak.");
+        } catch (DomainException $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 }
-

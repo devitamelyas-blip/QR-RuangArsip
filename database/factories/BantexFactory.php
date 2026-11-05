@@ -5,9 +5,6 @@ namespace Database\Factories;
 use App\Models\Bantex;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<Bantex>
- */
 class BantexFactory extends Factory
 {
     protected $model = Bantex::class;

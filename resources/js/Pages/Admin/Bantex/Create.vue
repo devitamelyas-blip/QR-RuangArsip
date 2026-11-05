@@ -25,7 +25,6 @@
 
     <div class="max-w-4xl mx-auto">
       <form @submit.prevent="submit" class="space-y-6">
-        <!-- Informasi Lokasi Fisik Bantex -->
         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs space-y-4">
           <h3 class="text-sm font-bold text-slate-900 pb-2 border-b border-slate-100 flex items-center">
             <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -35,7 +34,6 @@
           </h3>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Kode Bantex -->
             <div class="md:col-span-2">
               <label class="block text-xs font-semibold text-slate-700 mb-1">
                 Kode Bantex <span class="text-rose-600">*</span>
@@ -56,7 +54,6 @@
               </p>
             </div>
 
-            <!-- Tim -->
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">
                 Kelompok / Tim <span class="text-rose-600">*</span>
@@ -74,7 +71,6 @@
               </p>
             </div>
 
-            <!-- Nomor Rak -->
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">
                 Nomor Rak <span class="text-rose-600">*</span>
@@ -92,7 +88,6 @@
               </p>
             </div>
 
-            <!-- Baris -->
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">
                 Baris Rak <span class="text-rose-600">*</span>
@@ -110,7 +105,6 @@
               </p>
             </div>
 
-            <!-- Urutan Bantex -->
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">
                 Urutan Bantex <span class="text-rose-600">*</span>
@@ -128,7 +122,6 @@
               </p>
             </div>
 
-            <!-- Keterangan Lokasi (Cara Baca) -->
             <div class="md:col-span-2">
               <label class="block text-xs font-semibold text-slate-700 mb-1">
                 Keterangan Lokasi / Cara Baca (Opsional)
@@ -146,7 +139,6 @@
           </div>
         </div>
 
-        <!-- Daftar Dokumen Pengadaan (Repeater) -->
         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
           <DocumentRepeater v-model="form.dokumen" />
           <p v-if="form.errors.dokumen" class="text-xs text-rose-600 mt-2">
@@ -154,7 +146,6 @@
           </p>
         </div>
 
-        <!-- Action Buttons -->
         <div class="flex items-center justify-end space-x-3 pt-2">
           <Link
             :href="route('admin.bantex.index')"
@@ -205,4 +196,3 @@ function submit() {
   form.post(route('admin.bantex.store'));
 }
 </script>
-

@@ -5,19 +5,19 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BorrowBantexRequest;
 use App\Models\Bantex;
-use App\Models\Peminjaman;
-use Carbon\Carbon;
+use App\Services\LoanService;
+use DomainException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ScanController extends Controller
 {
-    /**
-     * Tampilkan informasi bantex hasil scan QR Code.
-     */
+    public function __construct(
+        protected LoanService $loanService
+    ) {}
+
     public function show(string $slug): Response
     {
         $bantex = Bantex::where('slug', $slug)
@@ -53,62 +53,25 @@ class ScanController extends Controller
         ]);
     }
 
-    /**
-     * Proses peminjaman bantex dengan locking transaksi database.
-     */
     public function borrow(BorrowBantexRequest $request, string $slug): RedirectResponse
     {
-        return DB::transaction(function () use ($request, $slug) {
-            $bantex = Bantex::where('slug', $slug)
-                ->lockForUpdate()
-                ->firstOrFail();
-
-            if ($bantex->status !== 'tersedia') {
-                return back()->with('error', 'Gagal meminjam: Bantex ini baru saja dipinjam oleh peminjam lain.');
-            }
-
-            Peminjaman::create([
-                'bantex_id' => $bantex->id,
-                'nama_peminjam' => $request->validated('nama_peminjam'),
-                'keperluan' => $request->validated('keperluan'),
-                'tanggal_pinjam' => Carbon::now(),
-                'tanggal_kembali' => null,
-            ]);
-
-            $bantex->update(['status' => 'dipinjam']);
+        try {
+            $bantex = $this->loanService->borrowBySlug($slug, $request->validated());
 
             return back()->with('success', "Peminjaman bantex {$bantex->kode_bantex} berhasil dicatat. Silakan ambil dokumen dari rak.");
-        });
+        } catch (DomainException $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 
-    /**
-     * Proses pengembalian bantex dengan locking transaksi database.
-     */
     public function returnBantex(Request $request, string $slug): RedirectResponse
     {
-        return DB::transaction(function () use ($slug) {
-            $bantex = Bantex::where('slug', $slug)
-                ->lockForUpdate()
-                ->firstOrFail();
-
-            if ($bantex->status !== 'dipinjam') {
-                return back()->with('error', 'Gagal memproses: Bantex ini sudah berstatus tersedia atau sudah dikembalikan.');
-            }
-
-            $activeLoan = Peminjaman::where('bantex_id', $bantex->id)
-                ->whereNull('tanggal_kembali')
-                ->latest('tanggal_pinjam')
-                ->first();
-
-            if ($activeLoan) {
-                $activeLoan->update([
-                    'tanggal_kembali' => Carbon::now(),
-                ]);
-            }
-
-            $bantex->update(['status' => 'tersedia']);
+        try {
+            $bantex = $this->loanService->returnBySlug($slug);
 
             return back()->with('success', "Bantex {$bantex->kode_bantex} berhasil dikembalikan ke status tersedia. Terima kasih!");
-        });
+        } catch (DomainException $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 }

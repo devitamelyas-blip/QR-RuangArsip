@@ -6,24 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('dokumen_bantex', function (Blueprint $table) {
             $table->id();
             $table->foreignId('bantex_id')->constrained('bantex')->cascadeOnDelete();
-            $table->string('no_pengadaan');
-            $table->string('nama_pengadaan');
-            $table->string('tahun');
+            $table->string('no_pengadaan')->index();
+            $table->string('nama_pengadaan')->index();
+            $table->string('tahun', 10)->index();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('dokumen_bantex');

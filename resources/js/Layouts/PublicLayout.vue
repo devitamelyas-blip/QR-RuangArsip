@@ -1,11 +1,9 @@
 <template>
   <div class="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased flex flex-col selection:bg-blue-600 selection:text-white">
-    <!-- Header -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <Link :href="route('public.search')" class="flex items-center space-x-2.5 group">
           <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-xs group-hover:bg-blue-700 transition">
-            <!-- Box / Archive Icon SVG -->
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
             </svg>
@@ -16,7 +14,6 @@
           </div>
         </Link>
 
-        <!-- Nav actions -->
         <nav class="flex items-center space-x-2">
           <Link
             :href="route('public.search')"
@@ -53,9 +50,7 @@
       </div>
     </header>
 
-    <!-- Main Content Container -->
     <main class="flex-1 max-w-3xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-7">
-      <!-- Flash Alert: Success -->
       <transition
         enter-active-class="transition duration-300 ease-out"
         enter-from-class="transform -translate-y-2 opacity-0"
@@ -78,7 +73,6 @@
         </div>
       </transition>
 
-      <!-- Flash Alert: Error -->
       <transition
         enter-active-class="transition duration-300 ease-out"
         enter-from-class="transform -translate-y-2 opacity-0"
@@ -101,11 +95,9 @@
         </div>
       </transition>
 
-      <!-- Slot Content -->
       <slot />
     </main>
 
-    <!-- Footer -->
     <footer class="mt-auto border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-500">
       <div class="max-w-3xl mx-auto px-4">
         Sistem Arsip Internal &bull; Akses Lokal WiFi Kantor
@@ -117,4 +109,3 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
 </script>
-

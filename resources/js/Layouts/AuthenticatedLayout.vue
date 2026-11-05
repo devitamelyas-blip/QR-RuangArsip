@@ -13,11 +13,9 @@ const showingNavigationDropdown = ref(false);
   <div>
     <div class="min-h-screen bg-slate-100 flex flex-col font-sans antialiased text-slate-900 selection:bg-blue-600 selection:text-white">
       <nav class="border-b border-slate-200 bg-white sticky top-0 z-30 shadow-xs">
-        <!-- Primary Navigation Menu -->
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div class="flex h-16 justify-between items-center">
             <div class="flex items-center">
-              <!-- Logo -->
               <div class="flex shrink-0 items-center">
                 <Link :href="route('admin.dashboard')" class="flex items-center space-x-2.5">
                   <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-xs">
@@ -29,7 +27,6 @@ const showingNavigationDropdown = ref(false);
                 </Link>
               </div>
 
-              <!-- Navigation Links -->
               <div class="hidden space-x-2 sm:ms-8 sm:flex">
                 <NavLink
                   :href="route('admin.dashboard')"
@@ -53,7 +50,6 @@ const showingNavigationDropdown = ref(false);
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:space-x-4">
-              <!-- Link ke Halaman Publik -->
               <a
                 :href="route('public.search')"
                 target="_blank"
@@ -65,7 +61,6 @@ const showingNavigationDropdown = ref(false);
                 Halaman Publik
               </a>
 
-              <!-- Settings Dropdown -->
               <div class="relative">
                 <Dropdown align="right" width="48">
                   <template #trigger>
@@ -101,7 +96,6 @@ const showingNavigationDropdown = ref(false);
               </div>
             </div>
 
-            <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
               <button
                 @click="showingNavigationDropdown = !showingNavigationDropdown"
@@ -128,7 +122,6 @@ const showingNavigationDropdown = ref(false);
           </div>
         </div>
 
-        <!-- Responsive Navigation Menu -->
         <div :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }" class="sm:hidden border-t border-slate-200 bg-white">
           <div class="space-y-1 pb-3 pt-2">
             <ResponsiveNavLink :href="route('admin.dashboard')" :active="route().current('admin.dashboard')">
@@ -160,17 +153,14 @@ const showingNavigationDropdown = ref(false);
         </div>
       </nav>
 
-      <!-- Page Heading -->
       <header class="bg-white border-b border-slate-200" v-if="$slots.header">
         <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
           <slot name="header" />
         </div>
       </header>
 
-      <!-- Main Content -->
       <main class="flex-1 py-6">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <!-- Flash Alert: Success -->
           <div
             v-if="$page.props.flash?.success"
             class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-start space-x-3 shadow-xs"
@@ -184,7 +174,6 @@ const showingNavigationDropdown = ref(false);
             </div>
           </div>
 
-          <!-- Flash Alert: Error -->
           <div
             v-if="$page.props.flash?.error"
             class="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 flex items-start space-x-3 shadow-xs"

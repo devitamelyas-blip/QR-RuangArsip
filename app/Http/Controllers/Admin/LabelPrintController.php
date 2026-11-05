@@ -16,9 +16,6 @@ class LabelPrintController extends Controller
         protected QrCodeService $qrCodeService
     ) {}
 
-    /**
-     * Tampilkan cetak label untuk satu bantex.
-     */
     public function printSingle(Bantex $bantex): Response
     {
         $qrSvg = $this->qrCodeService->generateForBantex($bantex->slug, 160);
@@ -40,9 +37,6 @@ class LabelPrintController extends Controller
         ]);
     }
 
-    /**
-     * Tampilkan cetak label massal untuk beberapa bantex yang dipilih.
-     */
     public function printBatch(Request $request): Response|RedirectResponse
     {
         $ids = $request->input('ids');
@@ -75,7 +69,7 @@ class LabelPrintController extends Controller
                 'keterangan_lokasi' => $bantex->keterangan_lokasi,
                 'qr_svg' => $this->qrCodeService->generateForBantex($bantex->slug, 160),
             ];
-        })->values()->all();
+        });
 
         return Inertia::render('Admin/Labels/Print', [
             'labels' => $labels,

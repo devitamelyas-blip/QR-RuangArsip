@@ -6,18 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBantexRequest;
 use App\Http\Requests\UpdateBantexRequest;
 use App\Models\Bantex;
-use App\Models\DokumenBantex;
+use App\Services\BantexService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class BantexController extends Controller
 {
-    /**
-     * Tampilkan daftar master data bantex.
-     */
+    public function __construct(
+        protected BantexService $bantexService
+    ) {}
+
     public function index(Request $request): Response
     {
         $search = trim((string) $request->input('search', ''));
@@ -75,52 +75,19 @@ class BantexController extends Controller
         ]);
     }
 
-    /**
-     * Form tambah bantex baru.
-     */
     public function create(): Response
     {
         return Inertia::render('Admin/Bantex/Create');
     }
 
-    /**
-     * Simpan bantex baru beserta dokumennya.
-     */
     public function store(StoreBantexRequest $request): RedirectResponse
     {
-        DB::transaction(function () use ($request) {
-            $slug = Bantex::generateSlug($request->validated('kode_bantex'));
-
-            $bantex = Bantex::create([
-                'kode_bantex' => $request->validated('kode_bantex'),
-                'slug' => $slug,
-                'tim' => $request->validated('tim'),
-                'nomor_rak' => $request->validated('nomor_rak'),
-                'baris' => $request->validated('baris'),
-                'urutan_bantex' => $request->validated('urutan_bantex'),
-                'keterangan_lokasi' => $request->validated('keterangan_lokasi'),
-                'status' => 'tersedia',
-            ]);
-
-            $dokumenList = $request->validated('dokumen', []);
-            foreach ($dokumenList as $doc) {
-                if (! empty($doc['no_pengadaan']) && ! empty($doc['nama_pengadaan'])) {
-                    $bantex->dokumen()->create([
-                        'no_pengadaan' => trim($doc['no_pengadaan']),
-                        'nama_pengadaan' => trim($doc['nama_pengadaan']),
-                        'tahun' => trim($doc['tahun'] ?? date('Y')),
-                    ]);
-                }
-            }
-        });
+        $this->bantexService->create($request->validated());
 
         return redirect()->route('admin.bantex.index')
             ->with('success', 'Bantex dan daftar dokumen berhasil ditambahkan.');
     }
 
-    /**
-     * Form edit bantex dan dokumennya.
-     */
     public function edit(Bantex $bantex): Response
     {
         $bantex->load('dokumen');
@@ -146,75 +113,21 @@ class BantexController extends Controller
         ]);
     }
 
-    /**
-     * Update data bantex dan sinkronisasi dokumennya.
-     */
     public function update(UpdateBantexRequest $request, Bantex $bantex): RedirectResponse
     {
-        DB::transaction(function () use ($request, $bantex) {
-            $newCode = $request->validated('kode_bantex');
-            $newSlug = Bantex::generateSlug($newCode);
-
-            $bantex->update([
-                'kode_bantex' => $newCode,
-                'slug' => $newSlug,
-                'tim' => $request->validated('tim'),
-                'nomor_rak' => $request->validated('nomor_rak'),
-                'baris' => $request->validated('baris'),
-                'urutan_bantex' => $request->validated('urutan_bantex'),
-                'keterangan_lokasi' => $request->validated('keterangan_lokasi'),
-            ]);
-
-            $submittedDocs = $request->validated('dokumen', []);
-            $keptDocIds = [];
-
-            foreach ($submittedDocs as $doc) {
-                if (empty($doc['no_pengadaan']) || empty($doc['nama_pengadaan'])) {
-                    continue;
-                }
-
-                if (! empty($doc['id'])) {
-                    $existing = DokumenBantex::where('bantex_id', $bantex->id)
-                        ->where('id', $doc['id'])
-                        ->first();
-
-                    if ($existing) {
-                        $existing->update([
-                            'no_pengadaan' => trim($doc['no_pengadaan']),
-                            'nama_pengadaan' => trim($doc['nama_pengadaan']),
-                            'tahun' => trim($doc['tahun'] ?? date('Y')),
-                        ]);
-                        $keptDocIds[] = $existing->id;
-                    }
-                } else {
-                    $newDoc = $bantex->dokumen()->create([
-                        'no_pengadaan' => trim($doc['no_pengadaan']),
-                        'nama_pengadaan' => trim($doc['nama_pengadaan']),
-                        'tahun' => trim($doc['tahun'] ?? date('Y')),
-                    ]);
-                    $keptDocIds[] = $newDoc->id;
-                }
-            }
-
-            // Hapus dokumen yang dibuang dari form edit
-            $bantex->dokumen()->whereNotIn('id', $keptDocIds)->delete();
-        });
+        $this->bantexService->update($bantex, $request->validated());
 
         return redirect()->route('admin.bantex.index')
             ->with('success', 'Data bantex dan daftar dokumen berhasil diperbarui.');
     }
 
-    /**
-     * Hapus bantex (dicegah jika sedang berstatus dipinjam).
-     */
     public function destroy(Bantex $bantex): RedirectResponse
     {
-        if ($bantex->status === 'dipinjam') {
-            return back()->with('error', "Gagal menghapus: Bantex '{$bantex->kode_bantex}' saat ini sedang dipinjam.");
-        }
-
         $code = $bantex->kode_bantex;
-        $bantex->delete();
+
+        if (! $this->bantexService->delete($bantex)) {
+            return back()->with('error', "Gagal menghapus: Bantex '{$code}' saat ini sedang dipinjam.");
+        }
 
         return redirect()->route('admin.bantex.index')
             ->with('success', "Bantex '{$code}' beserta dokumen di dalamnya berhasil dihapus.");

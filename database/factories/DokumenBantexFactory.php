@@ -6,9 +6,6 @@ use App\Models\Bantex;
 use App\Models\DokumenBantex;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<DokumenBantex>
- */
 class DokumenBantexFactory extends Factory
 {
     protected $model = DokumenBantex::class;

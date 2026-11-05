@@ -13,7 +13,6 @@
           </p>
         </div>
         <div class="flex items-center space-x-2">
-          <!-- Batch Print Button -->
           <button
             v-if="selectedIds.length > 0"
             type="button"
@@ -26,7 +25,6 @@
             Cetak Label Terpilih ({{ selectedIds.length }})
           </button>
 
-          <!-- Tambah Bantex Button -->
           <Link
             :href="route('admin.bantex.create')"
             class="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-semibold text-xs rounded-xl hover:bg-blue-700 transition active:scale-95 shadow-xs"
@@ -41,7 +39,6 @@
     </template>
 
     <div class="space-y-5">
-      <!-- Filter Bar -->
       <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
         <form @submit.prevent="applyFilters" class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
           <div class="flex-1 relative">
@@ -57,7 +54,6 @@
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
-            <!-- Filter Tim -->
             <select
               v-model="filterForm.tim"
               @change="applyFilters"
@@ -69,7 +65,6 @@
               </option>
             </select>
 
-            <!-- Filter Status -->
             <select
               v-model="filterForm.status"
               @change="applyFilters"
@@ -98,7 +93,6 @@
         </form>
       </div>
 
-      <!-- Table Card -->
       <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse text-xs">
@@ -132,7 +126,6 @@
                 class="hover:bg-slate-50/70 transition"
                 :class="{ 'bg-blue-50/30': selectedIds.includes(item.id) }"
               >
-                <!-- Checkbox -->
                 <td class="py-3.5 px-4 text-center">
                   <input
                     type="checkbox"
@@ -142,7 +135,6 @@
                   />
                 </td>
 
-                <!-- Kode Bantex & Slug -->
                 <td class="py-3.5 px-4 font-mono font-bold text-slate-900">
                   <Link :href="route('admin.bantex.edit', item.id)" class="hover:text-blue-600 hover:underline">
                     {{ item.kode_bantex }}
@@ -152,33 +144,27 @@
                   </span>
                 </td>
 
-                <!-- Tim -->
                 <td class="py-3.5 px-4 text-slate-700 font-semibold">
                   Tim {{ item.tim }}
                 </td>
 
-                <!-- Posisi Rak -->
                 <td class="py-3.5 px-4 text-slate-700">
                   <span class="font-semibold">{{ item.nomor_rak }}, {{ item.baris }}</span>
                   <span class="block text-[11px] text-slate-400">{{ item.urutan_bantex }}</span>
                 </td>
 
-                <!-- Jumlah Dokumen -->
                 <td class="py-3.5 px-4 text-slate-600">
                   <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-medium text-[11px]">
                     {{ item.dokumen_count }} dokumen
                   </span>
                 </td>
 
-                <!-- Status -->
                 <td class="py-3.5 px-4">
                   <StatusBadge :status="item.status" />
                 </td>
 
-                <!-- Aksi -->
                 <td class="py-3.5 px-4 text-right">
                   <div class="flex items-center justify-end space-x-1.5">
-                    <!-- Cetak Label -->
                     <Link
                       :href="route('admin.labels.print-single', item.id)"
                       target="_blank"
@@ -190,7 +176,6 @@
                       </svg>
                     </Link>
 
-                    <!-- Edit -->
                     <Link
                       :href="route('admin.bantex.edit', item.id)"
                       class="p-1.5 rounded-lg text-slate-500 hover:text-blue-700 hover:bg-blue-50 transition"
@@ -201,7 +186,6 @@
                       </svg>
                     </Link>
 
-                    <!-- Hapus -->
                     <button
                       type="button"
                       @click="confirmDelete(item)"
@@ -220,14 +204,12 @@
           </table>
         </div>
 
-        <!-- Pagination -->
         <div class="p-4 border-t border-slate-200">
           <Pagination :links="bantex.links" />
         </div>
       </div>
     </div>
 
-    <!-- Modal Konfirmasi Hapus -->
     <ConfirmModal
       :show="showDeleteModal"
       title="Hapus Bantex"
@@ -283,7 +265,6 @@ function resetFilters() {
   applyFilters();
 }
 
-// Checkboxes & Batch Print
 const selectedIds = ref([]);
 
 const isAllSelected = computed(() => {
@@ -305,7 +286,6 @@ function printBatch() {
   window.open(url, '_blank');
 }
 
-// Delete Action
 const showDeleteModal = ref(false);
 const itemToDelete = ref(null);
 const deleteForm = useForm({});
@@ -326,4 +306,3 @@ function submitDelete() {
   });
 }
 </script>
-

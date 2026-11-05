@@ -8,9 +8,6 @@ use Illuminate\Database\Seeder;
 
 class BantexSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $bantexData = [
@@ -52,7 +49,7 @@ class BantexSeeder extends Seeder
                 'current_loan' => [
                     'nama_peminjam' => 'Budi Santoso',
                     'keperluan' => 'Audit internal pengadaan genset & panel listrik 2025',
-                    'tanggal_pinjam' => Carbon::now()->subDays(10), // Terlambat (> 7 hari)
+                    'tanggal_pinjam' => Carbon::now()->subDays(10),
                 ],
             ],
             [
@@ -106,7 +103,7 @@ class BantexSeeder extends Seeder
                 'current_loan' => [
                     'nama_peminjam' => 'Siti Rahmawati',
                     'keperluan' => 'Verifikasi polis asuransi armada pengiriman 2025',
-                    'tanggal_pinjam' => Carbon::now()->subDays(2), // Belum terlambat (<= 7 hari)
+                    'tanggal_pinjam' => Carbon::now()->subDays(2),
                 ],
             ],
             [

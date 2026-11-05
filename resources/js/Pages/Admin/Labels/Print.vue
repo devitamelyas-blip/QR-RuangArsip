@@ -2,7 +2,6 @@
   <div class="min-h-screen bg-slate-100 font-sans text-slate-900 print:bg-white print:p-0 selection:bg-blue-600 selection:text-white">
     <Head title="Cetak Label QR Code Bantex" />
 
-    <!-- Top Action Bar (Disembunyikan saat mencetak) -->
     <header class="no-print bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
       <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <div class="flex items-center space-x-3">
@@ -41,7 +40,6 @@
       </div>
     </header>
 
-    <!-- Kontainer Label Siap Cetak -->
     <main class="max-w-5xl mx-auto p-4 sm:p-6 print:p-0 print:max-w-none">
       <div class="label-grid grid grid-cols-1 md:grid-cols-2 gap-6 print:gap-4">
         <div
@@ -49,7 +47,6 @@
           :key="label.id"
           class="label-card bg-white rounded-xl border-2 border-dashed border-slate-300 print:border-slate-400 p-5 flex flex-col justify-between shadow-xs print:shadow-none break-inside-avoid"
         >
-          <!-- Header Label -->
           <div class="text-center pb-2.5 border-b border-slate-200">
             <h2 class="text-xs font-bold uppercase tracking-widest text-slate-800">
               Ruang Arsip Dokumen Pengadaan
@@ -59,15 +56,12 @@
             </p>
           </div>
 
-          <!-- Body: QR Code & Kode Lokasi Besar -->
           <div class="py-4 flex flex-col items-center justify-center text-center space-y-3">
-            <!-- QR Code SVG -->
             <div
               class="w-40 h-40 flex items-center justify-center p-1.5 bg-white border border-slate-200 rounded-xl"
               v-html="label.qr_svg"
             ></div>
 
-            <!-- Kode Lokasi Bantex BESAR -->
             <div class="w-full">
               <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
                 Kode Lokasi
@@ -77,7 +71,6 @@
               </div>
             </div>
 
-            <!-- Cara Baca / Detail Lokasi -->
             <div v-if="label.keterangan_lokasi" class="text-[11px] text-slate-700 font-medium px-2">
               {{ label.keterangan_lokasi }}
             </div>
@@ -86,7 +79,6 @@
             </div>
           </div>
 
-          <!-- Footer Label -->
           <div class="pt-2.5 border-t border-slate-200 text-center">
             <span class="inline-block px-3 py-1 rounded-md bg-slate-100 text-slate-800 text-[10px] font-bold uppercase tracking-wider">
               Scan untuk pinjam / kembali
@@ -150,4 +142,3 @@ function goBack() {
   }
 }
 </style>
-

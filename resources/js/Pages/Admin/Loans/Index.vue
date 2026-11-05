@@ -14,7 +14,6 @@
         </div>
 
         <div>
-          <!-- Tombol Export CSV -->
           <button
             type="button"
             @click="exportCsv"
@@ -30,11 +29,9 @@
     </template>
 
     <div class="space-y-5">
-      <!-- Filter Bar Lengkap -->
       <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs space-y-3">
         <form @submit.prevent="applyFilters">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <!-- Pencarian Bebas -->
             <div class="lg:col-span-2 relative">
               <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                 Pencarian
@@ -52,7 +49,6 @@
               </div>
             </div>
 
-            <!-- Filter Status Peminjaman -->
             <div>
               <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                 Status
@@ -68,7 +64,6 @@
               </select>
             </div>
 
-            <!-- Filter Bantex Tertentu -->
             <div>
               <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                 Pilih Bantex
@@ -84,7 +79,6 @@
               </select>
             </div>
 
-            <!-- Rentang Tanggal Mulai -->
             <div>
               <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                 Tanggal Pinjam Dari
@@ -96,7 +90,6 @@
               />
             </div>
 
-            <!-- Rentang Tanggal Sampai -->
             <div>
               <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                 Sampai Tanggal
@@ -108,7 +101,6 @@
               />
             </div>
 
-            <!-- Tombol Submit & Reset Filter -->
             <div class="sm:col-span-2 flex items-end justify-end space-x-2 pt-1">
               <button
                 type="submit"
@@ -128,7 +120,6 @@
         </form>
       </div>
 
-      <!-- Table Card -->
       <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse text-xs">
@@ -155,7 +146,6 @@
                 class="hover:bg-slate-50/70 transition"
                 :class="{ 'bg-rose-50/20': item.is_overdue }"
               >
-                <!-- Bantex -->
                 <td class="py-3.5 px-4 font-mono font-bold text-slate-900">
                   <span v-if="item.bantex">
                     <Link :href="route('public.scan', item.bantex.slug)" target="_blank" class="hover:text-blue-600 hover:underline">
@@ -168,22 +158,18 @@
                   <span v-else class="text-slate-400 italic">Bantex dihapus</span>
                 </td>
 
-                <!-- Peminjam -->
                 <td class="py-3.5 px-4 font-bold text-slate-800">
                   {{ item.nama_peminjam }}
                 </td>
 
-                <!-- Keperluan -->
                 <td class="py-3.5 px-4 text-slate-600 max-w-xs truncate" :title="item.keperluan">
                   {{ item.keperluan }}
                 </td>
 
-                <!-- Tanggal Pinjam -->
                 <td class="py-3.5 px-4 text-slate-600 whitespace-nowrap">
                   {{ item.tanggal_pinjam }}
                 </td>
 
-                <!-- Tanggal Kembali -->
                 <td class="py-3.5 px-4 whitespace-nowrap">
                   <span v-if="item.tanggal_kembali" class="text-emerald-700 font-medium">
                     {{ item.tanggal_kembali }}
@@ -193,14 +179,12 @@
                   </span>
                 </td>
 
-                <!-- Durasi Pinjam -->
                 <td class="py-3.5 px-4 text-center">
                   <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-semibold text-[11px]">
                     {{ item.lama_pinjam_hari }} hari
                   </span>
                 </td>
 
-                <!-- Status Badge -->
                 <td class="py-3.5 px-4 text-right">
                   <span
                     v-if="item.is_overdue"
@@ -229,7 +213,6 @@
           </table>
         </div>
 
-        <!-- Pagination -->
         <div class="p-4 border-t border-slate-200">
           <Pagination :links="loans.links" />
         </div>
@@ -300,4 +283,3 @@ function exportCsv() {
   window.location.href = route('admin.loans.export') + '?' + queryParams.toString();
 }
 </script>
-

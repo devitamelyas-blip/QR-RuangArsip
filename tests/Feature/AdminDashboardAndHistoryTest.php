@@ -18,7 +18,7 @@ test('admin dashboard menampilkan metrik statistik dan daftar monitoring bantex'
     Peminjaman::factory()->create([
         'bantex_id' => $bantexDipinjam->id,
         'nama_peminjam' => 'Doni Darmawan',
-        'tanggal_pinjam' => Carbon::now()->subDays(10), // Terlambat
+        'tanggal_pinjam' => Carbon::now()->subDays(10),
         'tanggal_kembali' => null,
     ]);
 
@@ -93,4 +93,3 @@ test('admin dapat mengekspor riwayat peminjaman ke format csv', function () {
     expect($response->streamedContent())->toContain('Export User Test');
     expect($response->streamedContent())->toContain('SCM/GP/R-01/01/HCGA/GA/99');
 });
-

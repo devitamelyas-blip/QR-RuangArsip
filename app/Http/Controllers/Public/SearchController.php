@@ -10,9 +10,6 @@ use Inertia\Response;
 
 class SearchController extends Controller
 {
-    /**
-     * Halaman pencarian publik dokumen & lokasi bantex.
-     */
     public function index(Request $request): Response
     {
         $keyword = trim((string) $request->input('q', ''));
