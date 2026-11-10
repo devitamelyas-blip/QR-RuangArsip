@@ -1,6 +1,5 @@
-<template>
+﻿<template>
   <div class="min-h-screen bg-[#F5F6F8] text-slate-800 font-sans antialiased flex flex-col">
-    <!-- Top Corporate Header -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-2xs">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <Link :href="route('public.search')" class="flex items-center space-x-2.5 group">
@@ -60,9 +59,7 @@
       </div>
     </header>
 
-    <!-- Main Container -->
     <main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
-      <!-- Flash Alert: Success -->
       <div
         v-if="$page.props.flash?.success"
         class="mb-5 p-3.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-start space-x-2.5 text-xs font-medium shadow-xs"
@@ -76,7 +73,6 @@
         </div>
       </div>
 
-      <!-- Flash Alert: Error -->
       <div
         v-if="$page.props.flash?.error"
         class="mb-5 p-3.5 rounded-md bg-rose-50 border border-rose-200 text-rose-900 flex items-start space-x-2.5 text-xs font-medium shadow-xs"
@@ -93,7 +89,6 @@
       <slot />
     </main>
 
-    <!-- Footer -->
     <footer class="mt-auto border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-500">
       <div class="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-1">
         <span>Pelita Air &bull; Divisi Supply Chain Management (SCM) &bull; Ruang Arsip Dokumen</span>

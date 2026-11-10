@@ -1,11 +1,10 @@
-<script setup>
+﻿<script setup>
 import { Link } from '@inertiajs/vue3';
 </script>
 
 <template>
   <div class="min-h-screen flex flex-col justify-center items-center bg-[#F5F6F8] p-4 sm:p-6 text-slate-800 font-sans">
     <div class="w-full max-w-md">
-      <!-- Corporate Header with Official Pelita Air Logo -->
       <div class="text-center mb-6">
         <div class="inline-flex flex-col items-center mb-2">
           <Link :href="route('public.search')" class="inline-block transition hover:opacity-90">
@@ -23,12 +22,10 @@ import { Link } from '@inertiajs/vue3';
         </p>
       </div>
 
-      <!-- Auth Card Box -->
       <div class="bg-white border border-slate-200 rounded-lg p-6 sm:p-7 shadow-xs">
         <slot />
       </div>
 
-      <!-- Security Notice Footer -->
       <div class="text-center mt-6 text-[11px] text-slate-400 space-y-1">
         <div>Akses terbatas khusus personil berwenang Pelita Air.</div>
         <div>&copy; {{ new Date().getFullYear() }} Pelita Air &bull; Supply Chain Management.</div>

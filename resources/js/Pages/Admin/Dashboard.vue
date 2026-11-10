@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <AuthenticatedLayout>
     <Head title="Dashboard Ruang Arsip SCM — Pelita Air" />
 
@@ -27,9 +27,7 @@
     </template>
 
     <div class="space-y-5">
-      <!-- Operational Metric Cards -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <!-- Metric 1: Total Bantex -->
         <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-2xs">
           <div class="flex items-center justify-between text-slate-500 mb-2">
             <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-600">Total Bantex</span>
@@ -45,7 +43,6 @@
           <span class="text-[11px] text-slate-400 mt-0.5 block">Seluruh unit terdaftar</span>
         </div>
 
-        <!-- Metric 2: Tersedia di Rak -->
         <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-2xs">
           <div class="flex items-center justify-between mb-2">
             <span class="text-[11px] font-semibold uppercase tracking-wider text-emerald-800">Dokumen Tersedia</span>
@@ -61,7 +58,6 @@
           <span class="text-[11px] text-slate-400 mt-0.5 block">Siap dipinjam di rak</span>
         </div>
 
-        <!-- Metric 3: Sedang Dipinjam -->
         <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-2xs">
           <div class="flex items-center justify-between mb-2">
             <span class="text-[11px] font-semibold uppercase tracking-wider text-amber-800">Sedang Dipinjam</span>
@@ -77,7 +73,6 @@
           <span class="text-[11px] text-slate-400 mt-0.5 block">Dokumen aktif di luar rak</span>
         </div>
 
-        <!-- Metric 4: Terlambat Pengembalian -->
         <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-2xs">
           <div class="flex items-center justify-between mb-2">
             <span class="text-[11px] font-semibold uppercase tracking-wider text-rose-800">Terlambat Pinjam</span>
@@ -94,7 +89,6 @@
         </div>
       </div>
 
-      <!-- Filter Controls Bar -->
       <div class="bg-white rounded-lg p-3.5 border border-slate-200 shadow-2xs">
         <form @submit.prevent="applyFilters" class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5">
           <div class="flex-1 relative">
@@ -162,7 +156,6 @@
         </form>
       </div>
 
-      <!-- Monitoring Table Section -->
       <div class="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-2xs">
         <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
           <div>
@@ -206,7 +199,6 @@
                 class="hover:bg-slate-50/80 transition"
                 :class="{ 'bg-amber-50/20': item.status === 'dipinjam' }"
               >
-                <!-- Kode Bantex -->
                 <td class="py-3 px-4">
                   <div class="font-mono font-bold text-slate-900 text-xs">
                     <Link :href="route('admin.bantex.edit', item.id)" class="hover:text-blue-700 hover:underline">
@@ -218,20 +210,17 @@
                   </div>
                 </td>
 
-                <!-- Lokasi Rak & Posisi -->
                 <td class="py-3 px-4 text-slate-700">
                   <div class="font-medium text-slate-800">{{ item.nomor_rak }}, {{ item.baris }}</div>
                   <div class="text-[11px] text-slate-500">{{ item.urutan_bantex }}</div>
                 </td>
 
-                <!-- Isi Dokumen -->
                 <td class="py-3 px-4 text-slate-600">
                   <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
                     {{ item.dokumen_count }} berkas
                   </span>
                 </td>
 
-                <!-- Status Badge -->
                 <td class="py-3 px-4">
                   <StatusBadge
                     :status="item.status"
@@ -239,7 +228,6 @@
                   />
                 </td>
 
-                <!-- Peminjam Saat Ini -->
                 <td class="py-3 px-4">
                   <div v-if="item.peminjaman_aktif" class="space-y-0.5">
                     <div class="font-semibold text-slate-900">{{ item.peminjaman_aktif.nama_peminjam }}</div>
@@ -264,7 +252,6 @@
                   </span>
                 </td>
 
-                <!-- Aksi Cepat -->
                 <td class="py-3 px-4 text-right">
                   <div class="flex items-center justify-end space-x-1.5">
                     <button
@@ -315,14 +302,12 @@
           </table>
         </div>
 
-        <!-- Pagination Bar -->
         <div class="px-4 py-3 border-t border-slate-200 bg-slate-50/50">
           <Pagination :links="bantexList.links" />
         </div>
       </div>
     </div>
 
-    <!-- Confirm Modal for Manual Return -->
     <ConfirmModal
       :show="showConfirmModal"
       title="Konfirmasi Pengembalian Bantex Manual"

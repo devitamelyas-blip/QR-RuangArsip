@@ -1,6 +1,5 @@
 <template>
   <div class="flex items-center space-x-3 select-none">
-    <!-- Official Pelita Air Symbol (Red, Olive Green, Blue) -->
     <div
       class="shrink-0 flex items-center justify-center transition-transform duration-200"
       :class="wrapperClass"
@@ -13,7 +12,6 @@
       />
     </div>
 
-    <!-- Official Brand & Division Typography -->
     <div v-if="!iconOnly" class="flex flex-col leading-tight min-w-0">
       <div class="flex items-center space-x-1.5">
         <span
@@ -57,7 +55,7 @@ const props = defineProps({
   },
   size: {
     type: String,
-    default: 'md', // sm, md, lg
+    default: 'md',
   },
   showDivision: {
     type: Boolean,

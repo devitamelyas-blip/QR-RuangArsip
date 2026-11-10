@@ -14,6 +14,9 @@ Route::get('/', function () {
 });
 
 Route::middleware(['restrict.ip'])->group(function () {
+    Route::get('/ruang/gp', [SearchController::class, 'roomGp'])->name('public.room.gp');
+    Route::get('/ruang/ac-ml', [SearchController::class, 'roomAcMl'])->name('public.room.ac-ml');
+
     Route::get('/b/{slug}', [ScanController::class, 'show'])->name('public.scan');
     Route::post('/b/{slug}/pinjam', [ScanController::class, 'borrow'])
         ->middleware('throttle:20,1')
@@ -41,6 +44,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
     Route::get('/bantex/{bantex}/cetak', [LabelPrintController::class, 'printSingle'])->name('labels.print-single');
     Route::match(['get', 'post'], '/cetak-massal', [LabelPrintController::class, 'printBatch'])->name('labels.print-batch');
+    Route::get('/qr-ruang-arsip', [LabelPrintController::class, 'printRooms'])->name('labels.rooms');
 });
 
 Route::middleware('auth')->group(function () {

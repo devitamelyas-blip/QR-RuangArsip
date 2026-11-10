@@ -31,6 +31,8 @@ class LabelPrintController extends Controller
                     'baris' => $bantex->baris,
                     'urutan_bantex' => $bantex->urutan_bantex,
                     'keterangan_lokasi' => $bantex->keterangan_lokasi,
+                    'ruang_arsip' => $bantex->ruang_arsip,
+                    'ruang_key' => $bantex->ruang_arsip_key,
                     'qr_svg' => $qrSvg,
                 ],
             ],
@@ -67,12 +69,51 @@ class LabelPrintController extends Controller
                 'baris' => $bantex->baris,
                 'urutan_bantex' => $bantex->urutan_bantex,
                 'keterangan_lokasi' => $bantex->keterangan_lokasi,
+                'ruang_arsip' => $bantex->ruang_arsip,
+                'ruang_key' => $bantex->ruang_arsip_key,
                 'qr_svg' => $this->qrCodeService->generateForBantex($bantex->slug, 160),
             ];
         });
 
         return Inertia::render('Admin/Labels/Print', [
             'labels' => $labels,
+        ]);
+    }
+
+    public function printRooms(Request $request): Response
+    {
+        $qrGp = $this->qrCodeService->generateForRoom('gp', 280);
+        $qrAcMl = $this->qrCodeService->generateForRoom('ac-ml', 280);
+
+        return Inertia::render('Admin/Labels/Rooms', [
+            'rooms' => [
+                [
+                    'key' => 'gp',
+                    'number' => 1,
+                    'title' => 'RUANG ARSIP 1',
+                    'subtitle' => 'Khusus Berkas Dokumen Pengadaan Tim GP (General Procurement)',
+                    'tim_label' => 'KHUSUS DOKUMEN GP',
+                    'tim_description' => 'General Procurement, Material Bangunan, Perlengkapan Gedung & Operasional',
+                    'teams' => ['GP'],
+                    'color' => '#0A2540',
+                    'url' => $this->qrCodeService->getRoomUrl('gp'),
+                    'qr_svg' => $qrGp,
+                    'total_bantex' => Bantex::ruangArsip('gp')->count(),
+                ],
+                [
+                    'key' => 'ac-ml',
+                    'number' => 2,
+                    'title' => 'RUANG ARSIP 2',
+                    'subtitle' => 'Gabungan Berkas Dokumen Tim AC (Aircraft Commercial) & ML (Material Logistics)',
+                    'tim_label' => 'DOKUMEN GABUNGAN AC & ML',
+                    'tim_description' => 'Aircraft Commercial, Suku Cadang Armada, Logistik & Pemeliharaan Teknis',
+                    'teams' => ['AC', 'ML'],
+                    'color' => '#003865',
+                    'url' => $this->qrCodeService->getRoomUrl('ac-ml'),
+                    'qr_svg' => $qrAcMl,
+                    'total_bantex' => Bantex::ruangArsip('ac-ml')->count(),
+                ],
+            ],
         ]);
     }
 }

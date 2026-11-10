@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { ref } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
@@ -49,6 +49,13 @@ const navigationItems = [
     activeCondition: () => route().current('admin.dashboard') && (new URLSearchParams(window.location.search).get('status') === 'dipinjam'),
     icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4',
   },
+  {
+    name: 'QR Ruang Arsip',
+    route: 'admin.labels.rooms',
+    activePattern: 'admin.labels.rooms',
+    icon: 'M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z',
+    badge: '2 Ruang',
+  },
 ];
 
 const secondaryItems = [
@@ -73,19 +80,16 @@ function isItemActive(item) {
 
 <template>
   <div class="min-h-screen bg-[#F5F6F8] font-sans antialiased text-slate-800 flex flex-col md:flex-row">
-    <!-- Mobile Sidebar Backdrop -->
     <div
       v-if="mobileSidebarOpen"
       class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs md:hidden"
       @click="mobileSidebarOpen = false"
     ></div>
 
-    <!-- Sidebar Navigation -->
     <aside
       class="fixed inset-y-0 left-0 z-50 w-64 bg-[#0A2540] text-slate-200 flex flex-col transition-transform duration-200 ease-in-out md:translate-x-0 border-r border-[#081E34]"
       :class="mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
     >
-      <!-- Sidebar Brand Header -->
       <div class="h-20 px-4 flex items-center justify-between border-b border-white/10 shrink-0 bg-[#071B2F]">
         <Link :href="route('admin.dashboard')" class="flex items-center space-x-2.5">
           <ApplicationLogo :is-dark="true" size="md" />
@@ -101,7 +105,6 @@ function isItemActive(item) {
         </button>
       </div>
 
-      <!-- Sidebar Navigation Links -->
       <div class="flex-1 overflow-y-auto px-3 py-4 space-y-6">
         <div>
           <div class="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
@@ -182,7 +185,6 @@ function isItemActive(item) {
         </div>
       </div>
 
-      <!-- Sidebar User Profile & Quick Logout Footer -->
       <div class="p-3 border-t border-white/10 bg-[#071B2F] shrink-0">
         <div class="flex items-center justify-between p-2 rounded-md bg-white/5 border border-white/5">
           <div class="flex items-center space-x-2.5 min-w-0">
@@ -213,9 +215,7 @@ function isItemActive(item) {
       </div>
     </aside>
 
-    <!-- Main Content Area -->
     <div class="flex-1 md:pl-64 flex flex-col min-w-0">
-      <!-- Top Navigation Bar -->
       <header class="h-16 bg-white border-b border-slate-200 sticky top-0 z-30 px-4 sm:px-6 flex items-center justify-between shadow-2xs">
         <div class="flex items-center space-x-3 min-w-0">
           <button
@@ -228,7 +228,6 @@ function isItemActive(item) {
             </svg>
           </button>
 
-          <!-- Breadcrumbs Hierarchy -->
           <nav class="flex items-center space-x-1.5 text-xs text-slate-500 truncate" aria-label="Breadcrumb">
             <Link :href="route('admin.dashboard')" class="hover:text-slate-900 transition flex items-center">
               <svg class="w-3.5 h-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -255,13 +254,12 @@ function isItemActive(item) {
             <template v-else>
               <span class="text-slate-300">/</span>
               <span class="font-medium text-slate-800 truncate">
-                {{ route().current('admin.dashboard') ? 'Dashboard' : (route().current('admin.bantex.*') ? 'Data Bantex' : (route().current('admin.loans.*') ? 'Riwayat Peminjaman' : 'Sistem Arsip')) }}
+                {{ route().current('admin.dashboard') ? 'Dashboard' : (route().current('admin.bantex.*') ? 'Data Bantex' : (route().current('admin.loans.*') ? 'Riwayat Peminjaman' : (route().current('admin.labels.*') ? 'QR & Label Arsip' : 'Sistem Arsip'))) }}
               </span>
             </template>
           </nav>
         </div>
 
-        <!-- Top Right Actions -->
         <div class="flex items-center space-x-3">
           <a
             :href="route('public.search')"
@@ -275,7 +273,6 @@ function isItemActive(item) {
             <span class="sm:hidden">Scan</span>
           </a>
 
-          <!-- User Account Menu -->
           <Dropdown align="right" width="48">
             <template #trigger>
               <button
@@ -309,14 +306,11 @@ function isItemActive(item) {
         </div>
       </header>
 
-      <!-- Page Title & Header Slot -->
       <section v-if="$slots.header" class="bg-white border-b border-slate-200 px-4 sm:px-6 py-4">
         <slot name="header" />
       </section>
 
-      <!-- Content Container -->
       <main class="flex-1 p-4 sm:p-6 lg:p-8">
-        <!-- Flash Notification: Success -->
         <div
           v-if="$page.props.flash?.success"
           class="mb-5 p-3.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-start space-x-2.5 text-xs font-medium"
@@ -330,7 +324,6 @@ function isItemActive(item) {
           </div>
         </div>
 
-        <!-- Flash Notification: Error -->
         <div
           v-if="$page.props.flash?.error"
           class="mb-5 p-3.5 rounded-md bg-rose-50 border border-rose-200 text-rose-900 flex items-start space-x-2.5 text-xs font-medium"
@@ -347,7 +340,6 @@ function isItemActive(item) {
         <slot />
       </main>
 
-      <!-- Minimal Enterprise Footer -->
       <footer class="mt-auto border-t border-slate-200 bg-white px-4 sm:px-6 py-3 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
         <div class="flex items-center space-x-2">
           <span class="font-semibold text-slate-700">Pelita Air</span>

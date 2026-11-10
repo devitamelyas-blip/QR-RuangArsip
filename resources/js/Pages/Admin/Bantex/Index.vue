@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <AuthenticatedLayout :breadcrumbs="[{ label: 'Data Dokumen & Bantex SCM' }]">
     <Head title="Data Bantex & Dokumen Pengadaan SCM — Pelita Air" />
 
@@ -39,7 +39,6 @@
     </template>
 
     <div class="space-y-4">
-      <!-- Filter Toolbar -->
       <div class="bg-white rounded-lg p-3.5 border border-slate-200 shadow-2xs">
         <form @submit.prevent="applyFilters" class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5">
           <div class="flex-1 relative">
@@ -106,7 +105,6 @@
         </form>
       </div>
 
-      <!-- Professional Bantex Table -->
       <div class="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-2xs">
         <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
           <div>
@@ -163,7 +161,6 @@
                 class="hover:bg-slate-50/80 transition"
                 :class="{ 'bg-blue-50/20': selectedIds.includes(item.id) }"
               >
-                <!-- Checkbox -->
                 <td class="py-3 px-3.5 text-center">
                   <input
                     type="checkbox"
@@ -173,7 +170,6 @@
                   />
                 </td>
 
-                <!-- Kode Bantex -->
                 <td class="py-3 px-4">
                   <div class="font-mono font-bold text-slate-900 text-xs">
                     <Link :href="route('admin.bantex.edit', item.id)" class="hover:text-blue-700 hover:underline">
@@ -185,40 +181,33 @@
                   </div>
                 </td>
 
-                <!-- Kelompok / Tim -->
                 <td class="py-3 px-4 text-slate-700">
                   <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
                     Tim {{ item.tim }}
                   </span>
                 </td>
 
-                <!-- Posisi Rak & Baris -->
                 <td class="py-3 px-4 text-slate-700">
                   <div class="font-medium text-slate-800">{{ item.nomor_rak }}, {{ item.baris }}</div>
                   <div class="text-[11px] text-slate-500">{{ item.urutan_bantex }}</div>
                 </td>
 
-                <!-- Keterangan Lokasi -->
                 <td class="py-3 px-4 text-slate-600 max-w-xs truncate" :title="item.keterangan_lokasi || '-'">
                   {{ item.keterangan_lokasi || '-' }}
                 </td>
 
-                <!-- Jumlah Dokumen -->
                 <td class="py-3 px-4 text-center">
                   <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                     {{ item.dokumen_count }} berkas
                   </span>
                 </td>
 
-                <!-- Status -->
                 <td class="py-3 px-4">
                   <StatusBadge :status="item.status" />
                 </td>
 
-                <!-- Aksi -->
                 <td class="py-3 px-4 text-right">
                   <div class="flex items-center justify-end space-x-1.5">
-                    <!-- Cetak Label QR -->
                     <Link
                       :href="route('admin.labels.print-single', item.id)"
                       target="_blank"
@@ -230,7 +219,6 @@
                       </svg>
                     </Link>
 
-                    <!-- Edit Bantex -->
                     <Link
                       :href="route('admin.bantex.edit', item.id)"
                       class="p-1.5 rounded-md text-slate-500 hover:text-blue-700 hover:bg-blue-50 transition border border-transparent hover:border-blue-200"
@@ -241,7 +229,6 @@
                       </svg>
                     </Link>
 
-                    <!-- Hapus Bantex -->
                     <button
                       type="button"
                       @click="confirmDelete(item)"
@@ -260,14 +247,12 @@
           </table>
         </div>
 
-        <!-- Pagination Section -->
         <div class="px-4 py-3 border-t border-slate-200 bg-slate-50/50">
           <Pagination :links="bantex.links" />
         </div>
       </div>
     </div>
 
-    <!-- Confirm Modal for Deletion -->
     <ConfirmModal
       :show="showDeleteModal"
       title="Konfirmasi Hapus Data Bantex"

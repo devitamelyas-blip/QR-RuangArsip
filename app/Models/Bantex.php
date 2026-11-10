@@ -66,4 +66,45 @@ class Bantex extends Model
     {
         return $this->status === 'dipinjam';
     }
+
+    public function getRuangArsipAttribute(): string
+    {
+        $timUpper = strtoupper((string) $this->tim);
+        if ($timUpper === 'GP' || str_contains($this->kode_bantex, '/GP/')) {
+            return 'Ruang Arsip 1 (GP)';
+        }
+        if (in_array($timUpper, ['AC', 'ML']) || str_contains($this->kode_bantex, '/AC/') || str_contains($this->kode_bantex, '/ML/')) {
+            return 'Ruang Arsip 2 (AC & ML)';
+        }
+        return 'Ruang Arsip ' . ($timUpper ?: '-');
+    }
+
+    public function getRuangArsipKeyAttribute(): string
+    {
+        $timUpper = strtoupper((string) $this->tim);
+        if ($timUpper === 'GP' || str_contains($this->kode_bantex, '/GP/')) {
+            return 'gp';
+        }
+        return 'ac-ml';
+    }
+
+    public function scopeRuangArsip($query, string $ruang)
+    {
+        if ($ruang === 'gp') {
+            return $query->where(function ($q) {
+                $q->where('tim', 'GP')
+                  ->orWhere('kode_bantex', 'like', '%/GP/%');
+            });
+        }
+
+        if ($ruang === 'ac-ml' || $ruang === 'ac_ml') {
+            return $query->where(function ($q) {
+                $q->whereIn('tim', ['AC', 'ML'])
+                  ->orWhere('kode_bantex', 'like', '%/AC/%')
+                  ->orWhere('kode_bantex', 'like', '%/ML/%');
+            });
+        }
+
+        return $query;
+    }
 }

@@ -13,23 +13,18 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LoanExportService
 {
-    /**
-     * Generate and stream a styled Excel (.xlsx) file.
-     */
     public function exportXlsx(Collection $records, array $filters = [], int $dueDays = 7): StreamedResponse
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Riwayat Peminjaman SCM');
 
-        // Document Properties
         $spreadsheet->getProperties()
-            ->setCreator('Pelita Air SCM Ruang Arsip')
+            ->setCreator('Pelita Air SCM')
             ->setLastModifiedBy('Pelita Air SCM')
             ->setTitle('Riwayat Peminjaman Dokumen SCM')
-            ->setSubject('Audit Log Peminjaman Berkas Arsip Pengadaan');
+            ->setSubject('Audit Log Peminjaman Berkas Arsip');
 
-        // Corporate Header Title (Pelita Air SCM)
         $sheet->setCellValue('A1', 'PT PELITA AIR SERVICE');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14)->getColor()->setRGB('0A2540');
 
@@ -44,7 +39,6 @@ class LoanExportService
         $sheet->setCellValue('A4', "Dicetak pada: {$exportTime} | Total: {$records->count()} transaksi | {$filterSummary}");
         $sheet->getStyle('A4')->getFont()->setSize(9)->setItalic(true)->getColor()->setRGB('64748B');
 
-        // Table Header
         $headers = [
             'A' => ['title' => 'No', 'width' => 6],
             'B' => ['title' => 'Kode Bantex', 'width' => 28],
@@ -69,7 +63,6 @@ class LoanExportService
             $sheet->getColumnDimension($col)->setWidth($meta['width']);
         }
 
-        // Header Styling (Pelita Navy #0A2540)
         $sheet->getStyle("A{$headerRow}:L{$headerRow}")->applyFromArray([
             'font' => [
                 'bold' => true,
@@ -93,7 +86,6 @@ class LoanExportService
             ],
         ]);
 
-        // Populate Data Rows
         $currentRow = 7;
         $no = 1;
 
@@ -104,7 +96,6 @@ class LoanExportService
             $statusText = $isReturned ? 'Sudah Kembali' : 'Sedang Dipinjam';
             $overdueText = $isOverdue ? "Terlambat (> {$dueDays} hari)" : 'Tepat Waktu';
 
-            // Document summary
             $dokumenList = $item->bantex?->dokumen?->map(function ($d) {
                 return $d->no_pengadaan ? "{$d->no_pengadaan} - {$d->nama_pengadaan}" : $d->nama_pengadaan;
             })->filter()->implode("\n") ?: ($item->bantex?->keterangan_lokasi ?? '-');
@@ -125,7 +116,6 @@ class LoanExportService
             $sheet->setCellValue("K{$currentRow}", $statusText);
             $sheet->setCellValue("L{$currentRow}", $overdueText);
 
-            // Row Zebra Background
             $rowBg = ($currentRow % 2 === 0) ? 'F8FAFC' : 'FFFFFF';
             $sheet->getStyle("A{$currentRow}:L{$currentRow}")->applyFromArray([
                 'fill' => [
@@ -144,7 +134,6 @@ class LoanExportService
                 ],
             ]);
 
-            // Alignment specs
             $sheet->getStyle("A{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle("B{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle("B{$currentRow}")->getFont()->setBold(true);
@@ -159,7 +148,6 @@ class LoanExportService
             $sheet->getStyle("K{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle("L{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-            // Status Badge Colors
             if ($isOverdue) {
                 $sheet->getStyle("K{$currentRow}:L{$currentRow}")->getFont()->setBold(true)->getColor()->setRGB('B91C1C');
                 $sheet->getStyle("K{$currentRow}:L{$currentRow}")->getFill()->getStartColor()->setRGB('FEF2F2');
@@ -172,10 +160,7 @@ class LoanExportService
             $currentRow++;
         }
 
-        // Freeze Panes at Row 7 so header stays fixed
         $sheet->freezePane('A7');
-
-        // Enable AutoFilter on Header Row
         $sheet->setAutoFilter("A{$headerRow}:L{$headerRow}");
 
         $filename = 'Laporan_Riwayat_Peminjaman_SCM_' . date('Y-m-d_His') . '.xlsx';
@@ -190,16 +175,12 @@ class LoanExportService
         ]);
     }
 
-    /**
-     * Generate and stream a clean CSV file with UTF-8 BOM.
-     */
     public function exportCsv(Collection $records, int $dueDays = 7): StreamedResponse
     {
         $filename = 'riwayat_peminjaman_arsip_' . date('Y-m-d_His') . '.csv';
 
         return response()->streamDownload(function () use ($records, $dueDays) {
             $handle = fopen('php://output', 'w');
-            // Write UTF-8 BOM so Excel opens it with proper character encoding
             fwrite($handle, "\xEF\xBB\xBF");
 
             fputcsv($handle, [

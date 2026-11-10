@@ -39,3 +39,21 @@ test('admin dapat mencetak label secara massal', function () {
             ->has('labels', 2)
         );
 });
+
+test('admin dapat membuka cetak poster qr ruang arsip 1 dan 2', function () {
+    $admin = User::factory()->create();
+
+    $response = $this->actingAs($admin)->get(route('admin.labels.rooms'));
+
+    $response->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Admin/Labels/Rooms')
+            ->has('rooms', 2)
+            ->where('rooms.0.key', 'gp')
+            ->where('rooms.0.title', 'RUANG ARSIP 1')
+            ->where('rooms.1.key', 'ac-ml')
+            ->where('rooms.1.title', 'RUANG ARSIP 2')
+            ->has('rooms.0.qr_svg')
+            ->has('rooms.1.qr_svg')
+        );
+});

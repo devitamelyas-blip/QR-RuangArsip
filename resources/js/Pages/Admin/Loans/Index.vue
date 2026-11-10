@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <AuthenticatedLayout :breadcrumbs="[{ label: 'Riwayat Peminjaman SCM' }]">
     <Head title="Riwayat Peminjaman Dokumen SCM — Pelita Air" />
 
@@ -13,9 +13,7 @@
           </p>
         </div>
 
-        <!-- Export Buttons Group -->
         <div class="flex items-center space-x-2">
-          <!-- Primary: Excel XLSX -->
           <button
             type="button"
             @click="exportReport('xlsx')"
@@ -28,7 +26,6 @@
             <span>Ekspor Excel (.xlsx)</span>
           </button>
 
-          <!-- Secondary: CSV -->
           <button
             type="button"
             @click="exportReport('csv')"
@@ -45,11 +42,9 @@
     </template>
 
     <div class="space-y-4">
-      <!-- Filter Card -->
       <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-2xs">
         <form @submit.prevent="applyFilters">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <!-- Search Keyword with Live Typing Debounce -->
             <div class="lg:col-span-2">
               <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1">
                 Kata Kunci Pencarian (Otomatis Filter)
@@ -80,7 +75,6 @@
               </div>
             </div>
 
-            <!-- Status Filter -->
             <div>
               <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1">
                 Status Transaksi
@@ -97,7 +91,6 @@
               </select>
             </div>
 
-            <!-- Bantex Selector -->
             <div>
               <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1">
                 Unit Bantex Spesifik
@@ -114,7 +107,6 @@
               </select>
             </div>
 
-            <!-- Date From -->
             <div>
               <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1">
                 Tanggal Pinjam Dari
@@ -127,7 +119,6 @@
               />
             </div>
 
-            <!-- Date To -->
             <div>
               <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1">
                 Sampai Tanggal
@@ -140,7 +131,6 @@
               />
             </div>
 
-            <!-- Filter Buttons -->
             <div class="sm:col-span-2 flex items-end justify-end space-x-2 pt-1">
               <button
                 type="submit"
@@ -159,7 +149,6 @@
           </div>
         </form>
 
-        <!-- Active Filter Chips -->
         <div v-if="hasActiveFilters" class="mt-3 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2">
           <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
             Filter Aktif:
@@ -207,7 +196,6 @@
         </div>
       </div>
 
-      <!-- History Table Card -->
       <div class="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-2xs">
         <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
           <div class="flex items-center space-x-2">
@@ -270,7 +258,6 @@
                 class="hover:bg-slate-50/80 transition"
                 :class="{ 'bg-rose-50/20': item.is_overdue }"
               >
-                <!-- Bantex & Lokasi -->
                 <td class="py-3 px-4 font-mono">
                   <span v-if="item.bantex">
                     <Link
@@ -291,22 +278,18 @@
                   <span v-else class="text-slate-400 italic font-sans">Unit bantex telah dihapus</span>
                 </td>
 
-                <!-- Peminjam -->
                 <td class="py-3 px-4 font-semibold text-slate-900">
                   {{ item.nama_peminjam }}
                 </td>
 
-                <!-- Keperluan -->
                 <td class="py-3 px-4 text-slate-600 max-w-xs truncate" :title="item.keperluan">
                   {{ item.keperluan }}
                 </td>
 
-                <!-- Waktu Pinjam -->
                 <td class="py-3 px-4 text-slate-600 whitespace-nowrap">
                   {{ item.tanggal_pinjam }}
                 </td>
 
-                <!-- Waktu Kembali -->
                 <td class="py-3 px-4 whitespace-nowrap">
                   <span v-if="item.tanggal_kembali" class="text-emerald-700 font-medium">
                     {{ item.tanggal_kembali }}
@@ -316,14 +299,12 @@
                   </span>
                 </td>
 
-                <!-- Durasi -->
                 <td class="py-3 px-4 text-center">
                   <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
                     {{ item.lama_pinjam_hari }} hari
                   </span>
                 </td>
 
-                <!-- Status -->
                 <td class="py-3 px-4 text-right">
                   <span
                     v-if="item.is_overdue"
@@ -352,7 +333,6 @@
           </table>
         </div>
 
-        <!-- Pagination Section -->
         <div class="px-4 py-3 border-t border-slate-200 bg-slate-50/50">
           <Pagination :links="loans.links" />
         </div>

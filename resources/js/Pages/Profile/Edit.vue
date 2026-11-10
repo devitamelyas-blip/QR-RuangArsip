@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
@@ -31,7 +31,6 @@ defineProps({
         </template>
 
         <div class="max-w-4xl space-y-5">
-            <!-- Informasi Profil -->
             <div class="bg-white p-5 border border-slate-200 rounded-lg shadow-2xs">
                 <UpdateProfileInformationForm
                     :must-verify-email="mustVerifyEmail"
@@ -39,12 +38,10 @@ defineProps({
                 />
             </div>
 
-            <!-- Perbarui Kata Sandi -->
             <div class="bg-white p-5 border border-slate-200 rounded-lg shadow-2xs">
                 <UpdatePasswordForm />
             </div>
 
-            <!-- Hapus Akun -->
             <div class="bg-white p-5 border border-slate-200 rounded-lg shadow-2xs">
                 <DeleteUserForm />
             </div>

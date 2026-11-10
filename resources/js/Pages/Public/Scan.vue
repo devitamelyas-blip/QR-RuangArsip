@@ -1,9 +1,8 @@
-<template>
+﻿<template>
   <PublicLayout>
     <Head :title="`Bantex ${bantex.kode_bantex} — Ruang Arsip SCM Pelita Air`" />
 
     <div class="space-y-4 pb-8">
-      <!-- Location & Identity Card -->
       <div class="bg-white rounded-lg p-5 shadow-2xs border border-slate-200">
         <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
           <div class="min-w-0">
@@ -20,7 +19,6 @@
           />
         </div>
 
-        <!-- 4-Col Location Details -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-3 border-t border-slate-100 text-xs">
           <div class="bg-slate-50 rounded-md p-2.5 border border-slate-200">
             <span class="text-slate-500 block text-[10px] uppercase font-bold">Kelompok / Tim</span>
@@ -51,7 +49,6 @@
         </div>
       </div>
 
-      <!-- State E: Pengembalian Dokumen (Jika Status: Sedang Dipinjam) -->
       <div
         v-if="bantex.status === 'dipinjam' && bantex.peminjaman_aktif"
         class="bg-white rounded-lg p-5 border border-amber-200 shadow-2xs"
@@ -108,7 +105,6 @@
         </div>
       </div>
 
-      <!-- State D: Form Peminjaman Dokumen (Jika Status: Tersedia) -->
       <div
         v-if="bantex.status === 'tersedia'"
         class="bg-white rounded-lg p-5 border border-slate-200 shadow-2xs"
@@ -208,7 +204,6 @@
         </form>
       </div>
 
-      <!-- Daftar Dokumen di dalam Bantex -->
       <div class="bg-white rounded-lg p-5 border border-slate-200 shadow-2xs">
         <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
           <div>
@@ -255,7 +250,6 @@
       </div>
     </div>
 
-    <!-- Confirm Modal Pengembalian -->
     <ConfirmModal
       :show="showReturnModal"
       title="Konfirmasi Pengembalian Bantex"

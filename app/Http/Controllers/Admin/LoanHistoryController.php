@@ -87,9 +87,6 @@ class LoanHistoryController extends Controller
         return $this->loanExportService->exportCsv($records, $dueDays);
     }
 
-    /**
-     * Build the reusable filtered query for both listing and export.
-     */
     protected function buildFilteredQuery(Request $request, int $dueDays): Builder
     {
         $overdueThreshold = Carbon::now()->subDays($dueDays);

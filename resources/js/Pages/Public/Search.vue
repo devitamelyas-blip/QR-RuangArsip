@@ -1,16 +1,85 @@
-<template>
+﻿<template>
   <PublicLayout>
     <Head title="Pencarian Dokumen Pengadaan SCM — Pelita Air" />
 
     <div class="space-y-4 pb-8">
-      <!-- Search Box Card -->
       <div class="bg-white rounded-lg p-5 border border-slate-200 shadow-2xs">
-        <h1 class="text-base font-bold text-[#0A2540] mb-0.5">
-          Pencarian Dokumen Fisik Pengadaan SCM
-        </h1>
-        <p class="text-xs text-slate-500 mb-3.5">
-          Cari berkas pengadaan fisik divisi Supply Chain Management (SCM) berdasarkan Nomor Pengadaan (Sxxxxxx), Nama Pekerjaan, Tahun, atau Kode Bantex.
-        </p>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+          <div>
+            <h1 class="text-base font-bold text-[#0A2540]">
+              Pencarian Dokumen Fisik Pengadaan SCM
+            </h1>
+            <p class="text-xs text-slate-500 mt-0.5">
+              Cari berkas pengadaan fisik divisi Supply Chain Management (SCM) berdasarkan nomor pengadaan, nama barang/jasa, atau kode bantex.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center p-1 bg-slate-100 rounded-lg mb-3.5 gap-1 text-xs font-semibold">
+          <button
+            type="button"
+            @click="selectRoom('semua')"
+            class="flex-1 py-1.5 px-3 rounded-md transition text-center flex items-center justify-center space-x-1.5"
+            :class="selectedRoom === 'semua' ? 'bg-white text-[#0A2540] shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'"
+          >
+            <span>Semua Ruang Arsip</span>
+            <span class="text-[10px] py-0.5 px-1.5 rounded-full" :class="selectedRoom === 'semua' ? 'bg-slate-100 text-slate-800' : 'bg-slate-200/70 text-slate-600'">
+              {{ roomCounts?.all || 0 }}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            @click="selectRoom('gp')"
+            class="flex-1 py-1.5 px-3 rounded-md transition text-center flex items-center justify-center space-x-1.5"
+            :class="selectedRoom === 'gp' ? 'bg-[#0A2540] text-white shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'"
+          >
+            <span>Ruang Arsip 1 (Khusus GP)</span>
+            <span class="text-[10px] py-0.5 px-1.5 rounded-full" :class="selectedRoom === 'gp' ? 'bg-white/20 text-white' : 'bg-slate-200/70 text-slate-600'">
+              {{ roomCounts?.gp || 0 }}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            @click="selectRoom('ac-ml')"
+            class="flex-1 py-1.5 px-3 rounded-md transition text-center flex items-center justify-center space-x-1.5"
+            :class="selectedRoom === 'ac-ml' ? 'bg-[#003865] text-white shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'"
+          >
+            <span>Ruang Arsip 2 (AC & ML)</span>
+            <span class="text-[10px] py-0.5 px-1.5 rounded-full" :class="selectedRoom === 'ac-ml' ? 'bg-white/20 text-white' : 'bg-slate-200/70 text-slate-600'">
+              {{ roomCounts?.ac_ml || 0 }}
+            </span>
+          </button>
+        </div>
+
+        <div
+          v-if="selectedRoom === 'gp'"
+          class="mb-3.5 p-2.5 rounded-md bg-blue-50/80 border border-blue-200 flex items-center justify-between text-xs"
+        >
+          <div class="flex items-center space-x-2 text-blue-950">
+            <span class="w-2 h-2 rounded-full bg-blue-600 shrink-0"></span>
+            <span class="font-bold">Ruang Arsip 1:</span>
+            <span class="text-blue-800">Khusus Dokumen General Procurement (GP)</span>
+          </div>
+          <span class="text-[11px] font-semibold text-blue-700 bg-white/70 px-2 py-0.5 rounded border border-blue-100">
+            Fasilitas 1
+          </span>
+        </div>
+
+        <div
+          v-else-if="selectedRoom === 'ac-ml'"
+          class="mb-3.5 p-2.5 rounded-md bg-indigo-50/80 border border-indigo-200 flex items-center justify-between text-xs"
+        >
+          <div class="flex items-center space-x-2 text-indigo-950">
+            <span class="w-2 h-2 rounded-full bg-indigo-600 shrink-0"></span>
+            <span class="font-bold">Ruang Arsip 2:</span>
+            <span class="text-indigo-800">Gabungan Dokumen Aircraft Commercial (AC) & Material Logistics (ML)</span>
+          </div>
+          <span class="text-[11px] font-semibold text-indigo-700 bg-white/70 px-2 py-0.5 rounded border border-indigo-100">
+            Fasilitas 2
+          </span>
+        </div>
 
         <form @submit.prevent="performSearch" class="relative">
           <div class="relative flex items-center">
@@ -22,7 +91,8 @@
             <input
               type="search"
               v-model="searchQuery"
-              placeholder="Masukkan nomor pengadaan, kata kunci pekerjaan, atau kode bantex..."
+              @input="onSearchInput"
+              :placeholder="searchPlaceholder"
               class="w-full pl-9 pr-20 py-2.5 rounded-md border-slate-300 text-xs focus:border-[#0A2540] focus:ring-[#0A2540]"
             />
             <div class="absolute inset-y-0 right-1.5 flex items-center">
@@ -38,46 +108,51 @@
 
         <div class="flex flex-wrap items-center gap-1.5 mt-3 text-[11px] text-slate-500">
           <span class="font-medium text-slate-600">Kata Kunci Cepat:</span>
-          <button
-            type="button"
-            @click="quickSearch('Atap')"
-            class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 transition border border-slate-200"
-          >
-            Atap
-          </button>
-          <button
-            type="button"
-            @click="quickSearch('Genset')"
-            class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 transition border border-slate-200"
-          >
-            Genset
-          </button>
-          <button
-            type="button"
-            @click="quickSearch('2026')"
-            class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 transition border border-slate-200"
-          >
-            2026
-          </button>
-          <button
-            type="button"
-            @click="quickSearch('SCM/GP')"
-            class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 transition border border-slate-200"
-          >
-            SCM/GP
-          </button>
+          <template v-if="selectedRoom === 'gp'">
+            <button
+              v-for="kw in ['Atap', 'Genset', 'Forklift', 'Baut', 'SCM/GP']"
+              :key="kw"
+              type="button"
+              @click="quickSearch(kw)"
+              class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 transition border border-slate-200"
+            >
+              {{ kw }}
+            </button>
+          </template>
+          <template v-else-if="selectedRoom === 'ac-ml'">
+            <button
+              v-for="kw in ['ERP', 'Asuransi', 'Coil Baja', 'Pelumas', 'SCM/AC', 'SCM/ML']"
+              :key="kw"
+              type="button"
+              @click="quickSearch(kw)"
+              class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 transition border border-slate-200"
+            >
+              {{ kw }}
+            </button>
+          </template>
+          <template v-else>
+            <button
+              v-for="kw in ['Atap', 'Genset', 'ERP', 'Asuransi', 'SCM/GP', 'SCM/AC']"
+              :key="kw"
+              type="button"
+              @click="quickSearch(kw)"
+              class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 transition border border-slate-200"
+            >
+              {{ kw }}
+            </button>
+          </template>
         </div>
       </div>
 
-      <!-- Results View -->
       <div v-if="results !== null" class="space-y-3">
         <div class="flex items-center justify-between px-1">
           <h2 class="text-xs font-bold text-slate-700 uppercase tracking-wider">
-            Hasil Pencarian:
-            <span class="text-blue-800 font-mono normal-case font-bold">"{{ filters.q }}"</span>
+            Hasil:
+            <span v-if="filters.q" class="text-blue-800 font-mono normal-case font-bold">"{{ filters.q }}"</span>
+            <span v-else class="text-slate-800 font-semibold normal-case">Daftar Dokumen di {{ activeRoomLabel }}</span>
           </h2>
           <span class="text-xs text-slate-500 font-medium">
-            {{ results.total }} berkas dokumen ditemukan
+            {{ results.total }} berkas dokumen terdaftar
           </span>
         </div>
 
@@ -91,10 +166,10 @@
             </svg>
           </div>
           <h3 class="text-sm font-bold text-slate-800 mb-1">
-            Tidak ada dokumen yang sesuai
+            Tidak ada dokumen yang sesuai di {{ activeRoomLabel }}
           </h3>
           <p class="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-            Periksa ejaan kata kunci pencarian Anda, gunakan kata yang lebih umum, atau cari berdasarkan nama kelompok tim.
+            Periksa ejaan kata kunci pencarian Anda, atau beralih ke tab <strong>Semua Ruang Arsip</strong> untuk mencari di ruangan lainnya.
           </p>
         </div>
 
@@ -111,7 +186,14 @@
                     {{ item.no_pengadaan }}
                   </span>
                   <span class="text-xs font-medium text-slate-500">
-                    Tahun Anggaran {{ item.tahun }}
+                    Tahun {{ item.tahun }}
+                  </span>
+                  <span
+                    v-if="item.bantex?.ruang_arsip"
+                    class="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                    :class="item.bantex.ruang_key === 'gp' ? 'bg-blue-100 text-blue-800' : 'bg-indigo-100 text-indigo-800'"
+                  >
+                    {{ item.bantex.ruang_arsip }}
                   </span>
                 </div>
                 <h3 class="text-sm font-bold text-slate-900 mt-1 leading-snug">
@@ -153,7 +235,6 @@
         </div>
       </div>
 
-      <!-- Initial Guidance State -->
       <div
         v-else
         class="bg-white rounded-lg p-8 border border-slate-200 text-center shadow-2xs"
@@ -164,10 +245,10 @@
           </svg>
         </div>
         <h2 class="text-sm font-bold text-slate-800 mb-1">
-          Sistem Lokasi Berkas & QR Code Ruang Arsip
+          Sistem Lokasi Berkas & QR Code Ruang Arsip SCM
         </h2>
         <p class="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
-          Ketik kata kunci dokumen pengadaan di atas, atau pindai label QR Code yang tertera pada bantex fisik menggunakan kamera smartphone Anda.
+          Pilih salah satu tab ruangan di atas atau ketik kata kunci nomor/nama pengadaan. Setiap ruang arsip memiliki QR Code fisik yang dapat dipindai langsung dengan smartphone.
         </p>
       </div>
     </div>
@@ -175,7 +256,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import StatusBadge from '@/Components/StatusBadge.vue';
@@ -184,23 +265,63 @@ import Pagination from '@/Components/Pagination.vue';
 const props = defineProps({
   filters: {
     type: Object,
-    default: () => ({ q: '' }),
+    default: () => ({ q: '', ruang: 'semua' }),
   },
   results: {
     type: Object,
     default: null,
   },
+  roomCounts: {
+    type: Object,
+    default: () => ({ all: 0, gp: 0, ac_ml: 0 }),
+  },
 });
 
 const searchQuery = ref(props.filters.q || '');
+const selectedRoom = ref(props.filters.ruang || 'semua');
+
+const searchPlaceholder = computed(() => {
+  if (selectedRoom.value === 'gp') {
+    return 'Cari dokumen di Ruang Arsip 1 (Khusus GP)...';
+  }
+  if (selectedRoom.value === 'ac-ml') {
+    return 'Cari dokumen di Ruang Arsip 2 (AC & ML)...';
+  }
+  return 'Masukkan nomor pengadaan, uraian barang/jasa, atau kode bantex...';
+});
+
+const activeRoomLabel = computed(() => {
+  if (selectedRoom.value === 'gp') return 'Ruang Arsip 1 (GP)';
+  if (selectedRoom.value === 'ac-ml') return 'Ruang Arsip 2 (AC & ML)';
+  return 'Semua Ruang Arsip';
+});
+
+let searchTimeout = null;
+function onSearchInput() {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    performSearch();
+  }, 350);
+}
+
+function selectRoom(roomKey) {
+  selectedRoom.value = roomKey;
+  performSearch();
+}
 
 function performSearch() {
-  if (!searchQuery.value.trim()) return;
-  router.get(
-    route('public.search'),
-    { q: searchQuery.value.trim() },
-    { preserveState: true, replace: true }
-  );
+  const params = {};
+  if (searchQuery.value.trim()) {
+    params.q = searchQuery.value.trim();
+  }
+  if (selectedRoom.value && selectedRoom.value !== 'semua') {
+    params.ruang = selectedRoom.value;
+  }
+
+  router.get(route('public.search'), params, {
+    preserveState: true,
+    replace: true,
+  });
 }
 
 function quickSearch(keyword) {

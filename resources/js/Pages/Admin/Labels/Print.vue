@@ -1,8 +1,7 @@
-<template>
+﻿<template>
   <div class="min-h-screen bg-[#F5F6F8] font-sans text-slate-800 print:bg-white print:p-0">
     <Head title="Cetak Label QR Code Bantex SCM — Pelita Air" />
 
-    <!-- No-Print Top Action Bar -->
     <header class="no-print bg-white border-b border-slate-200 sticky top-0 z-30 shadow-2xs">
       <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <div class="flex items-center space-x-3">
@@ -41,7 +40,6 @@
       </div>
     </header>
 
-    <!-- Label Cards Grid Container -->
     <main class="max-w-5xl mx-auto p-4 sm:p-6 print:p-0 print:max-w-none">
       <div class="label-grid grid grid-cols-1 md:grid-cols-2 gap-5 print:gap-3">
         <div
@@ -49,7 +47,6 @@
           :key="label.id"
           class="label-card bg-white rounded-lg border-2 border-dashed border-slate-300 print:border-slate-400 p-5 flex flex-col justify-between shadow-2xs print:shadow-none break-inside-avoid"
         >
-          <!-- Label Header: Pelita Air & Ruang Arsip SCM -->
           <div class="text-center pb-2.5 border-b border-slate-200">
             <div class="flex items-center justify-center space-x-1.5 mb-0.5">
               <img src="/images/pelita-symbol.png" alt="Pelita Air" class="h-4 w-auto object-contain" />
@@ -57,20 +54,26 @@
               <span class="w-1 h-2.5 rounded-full bg-[#D71920]"></span>
               <span class="text-[9.5px] font-bold tracking-wider text-slate-700 uppercase">DIVISI SCM</span>
             </div>
-            <p class="text-[10px] text-slate-600 font-medium">
-              Ruang Arsip Pengadaan &bull; Tim {{ label.tim }} &bull; {{ label.nomor_rak }} &bull; {{ label.baris }}
-            </p>
+            <div class="flex items-center justify-center space-x-2 mt-1">
+              <span
+                v-if="label.ruang_arsip"
+                class="px-2 py-0.5 rounded text-[9.5px] font-bold uppercase tracking-wider"
+                :class="label.ruang_key === 'gp' ? 'bg-blue-100 text-blue-900 border border-blue-200' : 'bg-indigo-100 text-indigo-900 border border-indigo-200'"
+              >
+                {{ label.ruang_arsip }}
+              </span>
+              <span class="text-[10px] text-slate-600 font-medium">
+                {{ label.nomor_rak }} &bull; {{ label.baris }}
+              </span>
+            </div>
           </div>
 
-          <!-- Label Body: QR Code & Location -->
           <div class="py-3 flex flex-col items-center justify-center text-center space-y-2.5">
-            <!-- QR SVG Box -->
             <div
               class="w-36 h-36 flex items-center justify-center p-1.5 bg-white border border-slate-300 rounded-md"
               v-html="label.qr_svg"
             ></div>
 
-            <!-- Kode Bantex Box -->
             <div class="w-full">
               <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
                 Kode Lokasi Bantex SCM
@@ -80,7 +83,6 @@
               </div>
             </div>
 
-            <!-- Location Details -->
             <div v-if="label.keterangan_lokasi" class="text-[11px] text-slate-700 font-medium px-2 leading-tight">
               {{ label.keterangan_lokasi }}
             </div>
@@ -89,7 +91,6 @@
             </div>
           </div>
 
-          <!-- Label Footer: Instruction -->
           <div class="pt-2 border-t border-slate-200 text-center">
             <span class="inline-block px-2.5 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-semibold uppercase tracking-wider border border-slate-200">
               Pindai (Scan) QR untuk Peminjaman / Pengembalian
