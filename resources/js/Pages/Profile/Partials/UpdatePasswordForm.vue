@@ -22,11 +22,11 @@ const updatePassword = () => {
         onError: () => {
             if (form.errors.password) {
                 form.reset('password', 'password_confirmation');
-                passwordInput.value.focus();
+                passwordInput.value?.focus();
             }
             if (form.errors.current_password) {
                 form.reset('current_password');
-                currentPasswordInput.value.focus();
+                currentPasswordInput.value?.focus();
             }
         },
     });
@@ -35,85 +35,89 @@ const updatePassword = () => {
 
 <template>
     <section>
-        <header>
-            <h2 class="text-lg font-medium text-gray-900">
-                Update Password
+        <header class="pb-3 border-b border-slate-100">
+            <h2 class="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                Perbarui Kata Sandi (Password)
             </h2>
-
-            <p class="mt-1 text-sm text-gray-600">
-                Ensure your account is using a long, random password to stay
-                secure.
+            <p class="mt-0.5 text-xs text-slate-500">
+                Pastikan akun Anda menggunakan kombinasi kata sandi yang aman untuk menjaga kerahasiaan data arsip.
             </p>
         </header>
 
-        <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
+        <form @submit.prevent="updatePassword" class="mt-4 space-y-4 max-w-xl">
             <div>
-                <InputLabel for="current_password" value="Current Password" />
+                <InputLabel for="current_password" value="Kata Sandi Saat Ini" class="text-xs font-semibold text-slate-700 mb-1" />
 
                 <TextInput
                     id="current_password"
                     ref="currentPasswordInput"
                     v-model="form.current_password"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="block w-full text-xs"
                     autocomplete="current-password"
+                    placeholder="••••••••"
                 />
 
                 <InputError
                     :message="form.errors.current_password"
-                    class="mt-2"
+                    class="mt-1 text-xs"
                 />
             </div>
 
             <div>
-                <InputLabel for="password" value="New Password" />
+                <InputLabel for="password" value="Kata Sandi Baru" class="text-xs font-semibold text-slate-700 mb-1" />
 
                 <TextInput
                     id="password"
                     ref="passwordInput"
                     v-model="form.password"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="block w-full text-xs"
                     autocomplete="new-password"
+                    placeholder="Minimal 8 karakter kombinasi"
                 />
 
-                <InputError :message="form.errors.password" class="mt-2" />
+                <InputError :message="form.errors.password" class="mt-1 text-xs" />
             </div>
 
             <div>
                 <InputLabel
                     for="password_confirmation"
-                    value="Confirm Password"
+                    value="Konfirmasi Kata Sandi Baru"
+                    class="text-xs font-semibold text-slate-700 mb-1"
                 />
 
                 <TextInput
                     id="password_confirmation"
                     v-model="form.password_confirmation"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="block w-full text-xs"
                     autocomplete="new-password"
+                    placeholder="Ulangi kata sandi baru"
                 />
 
                 <InputError
                     :message="form.errors.password_confirmation"
-                    class="mt-2"
+                    class="mt-1 text-xs"
                 />
             </div>
 
-            <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+            <div class="flex items-center gap-3 pt-1">
+                <PrimaryButton :disabled="form.processing">
+                    {{ form.processing ? 'Menyimpan...' : 'Perbarui Kata Sandi' }}
+                </PrimaryButton>
 
                 <Transition
-                    enter-active-class="transition ease-in-out"
+                    enter-active-class="transition ease-in-out duration-200"
                     enter-from-class="opacity-0"
-                    leave-active-class="transition ease-in-out"
+                    leave-active-class="transition ease-in-out duration-200"
                     leave-to-class="opacity-0"
                 >
                     <p
                         v-if="form.recentlySuccessful"
-                        class="text-sm text-gray-600"
+                        class="text-xs text-emerald-700 font-medium"
                     >
-                        Saved.
+                        Kata sandi berhasil diperbarui.
                     </p>
                 </Transition>
             </div>

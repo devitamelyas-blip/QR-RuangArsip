@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Bantex;
 use App\Models\Peminjaman;
+use App\Services\LoanExportService;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -13,49 +15,15 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LoanHistoryController extends Controller
 {
+    public function __construct(
+        protected LoanExportService $loanExportService
+    ) {}
+
     public function index(Request $request): Response
     {
         $dueDays = (int) config('arsip.loan_due_days', 7);
-        $overdueThreshold = Carbon::now()->subDays($dueDays);
 
-        $search = trim((string) $request->input('search', ''));
-        $status = $request->input('status', 'semua');
-        $bantexId = $request->input('bantex_id', 'semua');
-        $dateFrom = $request->input('date_from', '');
-        $dateTo = $request->input('date_to', '');
-
-        $query = Peminjaman::query()->with('bantex');
-
-        if ($search !== '') {
-            $query->where(function ($q) use ($search) {
-                $q->where('nama_peminjam', 'like', "%{$search}%")
-                    ->orWhere('keperluan', 'like', "%{$search}%")
-                    ->orWhereHas('bantex', function ($bq) use ($search) {
-                        $bq->where('kode_bantex', 'like', "%{$search}%");
-                    });
-            });
-        }
-
-        if ($bantexId !== 'semua' && ! empty($bantexId)) {
-            $query->where('bantex_id', $bantexId);
-        }
-
-        if ($dateFrom !== '') {
-            $query->whereDate('tanggal_pinjam', '>=', $dateFrom);
-        }
-
-        if ($dateTo !== '') {
-            $query->whereDate('tanggal_pinjam', '<=', $dateTo);
-        }
-
-        if ($status === 'dipinjam') {
-            $query->whereNull('tanggal_kembali');
-        } elseif ($status === 'kembali') {
-            $query->whereNotNull('tanggal_kembali');
-        } elseif ($status === 'terlambat') {
-            $query->whereNull('tanggal_kembali')
-                ->where('tanggal_pinjam', '<=', $overdueThreshold);
-        }
+        $query = $this->buildFilteredQuery($request, $dueDays);
 
         $loans = $query->orderByDesc('tanggal_pinjam')
             ->paginate(15)
@@ -65,6 +33,7 @@ class LoanHistoryController extends Controller
                 'bantex' => $item->bantex ? [
                     'id' => $item->bantex->id,
                     'kode_bantex' => $item->bantex->kode_bantex,
+                    'slug' => $item->bantex->slug,
                     'tim' => $item->bantex->tim,
                     'nomor_rak' => $item->bantex->nomor_rak,
                     'baris' => $item->bantex->baris,
@@ -85,11 +54,11 @@ class LoanHistoryController extends Controller
             'loans' => $loans,
             'allBantex' => $allBantex,
             'filters' => [
-                'search' => $search,
-                'status' => $status,
-                'bantex_id' => $bantexId,
-                'date_from' => $dateFrom,
-                'date_to' => $dateTo,
+                'search' => trim((string) $request->input('search', '')),
+                'status' => $request->input('status', 'semua'),
+                'bantex_id' => $request->input('bantex_id', 'semua'),
+                'date_from' => $request->input('date_from', ''),
+                'date_to' => $request->input('date_to', ''),
             ],
             'loan_due_days' => $dueDays,
         ]);
@@ -98,6 +67,31 @@ class LoanHistoryController extends Controller
     public function exportCsv(Request $request): StreamedResponse
     {
         $dueDays = (int) config('arsip.loan_due_days', 7);
+        $query = $this->buildFilteredQuery($request, $dueDays);
+        $records = $query->with(['bantex.dokumen'])->orderByDesc('tanggal_pinjam')->get();
+
+        $format = strtolower((string) $request->input('format', 'csv'));
+
+        if ($format === 'xlsx') {
+            $filters = [
+                'search' => trim((string) $request->input('search', '')),
+                'status' => $request->input('status', 'semua'),
+                'bantex_id' => $request->input('bantex_id', 'semua'),
+                'date_from' => $request->input('date_from', ''),
+                'date_to' => $request->input('date_to', ''),
+            ];
+
+            return $this->loanExportService->exportXlsx($records, $filters, $dueDays);
+        }
+
+        return $this->loanExportService->exportCsv($records, $dueDays);
+    }
+
+    /**
+     * Build the reusable filtered query for both listing and export.
+     */
+    protected function buildFilteredQuery(Request $request, int $dueDays): Builder
+    {
         $overdueThreshold = Carbon::now()->subDays($dueDays);
 
         $search = trim((string) $request->input('search', ''));
@@ -109,11 +103,20 @@ class LoanHistoryController extends Controller
         $query = Peminjaman::query()->with('bantex');
 
         if ($search !== '') {
-            $query->where(function ($q) use ($search) {
+            $query->where(function (Builder $q) use ($search) {
                 $q->where('nama_peminjam', 'like', "%{$search}%")
                     ->orWhere('keperluan', 'like', "%{$search}%")
-                    ->orWhereHas('bantex', function ($bq) use ($search) {
-                        $bq->where('kode_bantex', 'like', "%{$search}%");
+                    ->orWhereHas('bantex', function (Builder $bq) use ($search) {
+                        $bq->where('kode_bantex', 'like', "%{$search}%")
+                            ->orWhere('tim', 'like', "%{$search}%")
+                            ->orWhere('nomor_rak', 'like', "%{$search}%")
+                            ->orWhere('baris', 'like', "%{$search}%")
+                            ->orWhere('keterangan_lokasi', 'like', "%{$search}%")
+                            ->orWhereHas('dokumen', function (Builder $dq) use ($search) {
+                                $dq->where('nama_pengadaan', 'like', "%{$search}%")
+                                    ->orWhere('no_pengadaan', 'like', "%{$search}%")
+                                    ->orWhere('keterangan', 'like', "%{$search}%");
+                            });
                     });
             });
         }
@@ -123,11 +126,11 @@ class LoanHistoryController extends Controller
         }
 
         if ($dateFrom !== '') {
-            $query->whereDate('tanggal_pinjam', '>=', $dateFrom);
+            $query->where('tanggal_pinjam', '>=', Carbon::parse($dateFrom)->startOfDay());
         }
 
         if ($dateTo !== '') {
-            $query->whereDate('tanggal_pinjam', '<=', $dateTo);
+            $query->where('tanggal_pinjam', '<=', Carbon::parse($dateTo)->endOfDay());
         }
 
         if ($status === 'dipinjam') {
@@ -139,51 +142,6 @@ class LoanHistoryController extends Controller
                 ->where('tanggal_pinjam', '<=', $overdueThreshold);
         }
 
-        $records = $query->orderByDesc('tanggal_pinjam')->get();
-
-        $filename = 'riwayat_peminjaman_arsip_'.date('Y-m-d_His').'.csv';
-
-        return response()->streamDownload(function () use ($records) {
-            $handle = fopen('php://output', 'w');
-            fwrite($handle, "\xEF\xBB\xBF");
-
-            fputcsv($handle, [
-                'No',
-                'Kode Bantex',
-                'Tim',
-                'Lokasi Rak',
-                'Nama Peminjam',
-                'Keperluan',
-                'Tanggal Pinjam',
-                'Tanggal Kembali',
-                'Lama Pinjam (Hari)',
-                'Status',
-                'Keterangan Terlambat',
-            ]);
-
-            $no = 1;
-            foreach ($records as $item) {
-                $statusText = $item->tanggal_kembali ? 'Sudah Kembali' : 'Sedang Dipinjam';
-                $overdueText = $item->is_overdue ? 'Terlambat (> '.config('arsip.loan_due_days', 7).' hari)' : '-';
-
-                fputcsv($handle, [
-                    $no++,
-                    $item->bantex?->kode_bantex ?? '-',
-                    $item->bantex?->tim ?? '-',
-                    $item->bantex ? "{$item->bantex->nomor_rak}, {$item->bantex->baris}, {$item->bantex->urutan_bantex}" : '-',
-                    $item->nama_peminjam,
-                    $item->keperluan,
-                    $item->tanggal_pinjam?->format('Y-m-d H:i:s') ?? '-',
-                    $item->tanggal_kembali?->format('Y-m-d H:i:s') ?? '-',
-                    $item->lama_pinjam_hari,
-                    $statusText,
-                    $overdueText,
-                ]);
-            }
-
-            fclose($handle);
-        }, $filename, [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-        ]);
+        return $query;
     }
 }

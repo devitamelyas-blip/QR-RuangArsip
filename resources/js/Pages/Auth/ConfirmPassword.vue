@@ -19,35 +19,40 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Confirm Password" />
+        <Head title="Konfirmasi Kata Sandi — Pelita Air" />
 
-        <div class="mb-4 text-sm text-gray-600">
-            This is a secure area of the application. Please confirm your
-            password before continuing.
+        <div class="mb-4 pb-3 border-b border-slate-100">
+            <h3 class="text-sm font-bold text-slate-900">Konfirmasi Keamanan</h3>
+            <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                Ini adalah area dengan akses aman. Mohon konfirmasikan kata sandi Anda sebelum melanjutkan.
+            </p>
         </div>
 
-        <form @submit.prevent="submit">
+        <form @submit.prevent="submit" class="space-y-4">
             <div>
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" value="Kata Sandi" class="text-xs font-semibold text-slate-700 mb-1" />
+
                 <TextInput
                     id="password"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="block w-full text-xs"
                     v-model="form.password"
                     required
                     autocomplete="current-password"
                     autofocus
+                    placeholder="••••••••"
                 />
-                <InputError class="mt-2" :message="form.errors.password" />
+
+                <InputError class="mt-1 text-xs" :message="form.errors.password" />
             </div>
 
-            <div class="mt-4 flex justify-end">
+            <div class="pt-2">
                 <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
+                    class="w-full py-2.5 text-xs font-semibold shadow-xs"
+                    :class="{ 'opacity-50': form.processing }"
                     :disabled="form.processing"
                 >
-                    Confirm
+                    Konfirmasi Akses
                 </PrimaryButton>
             </div>
         </form>

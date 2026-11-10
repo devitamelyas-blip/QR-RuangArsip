@@ -1,10 +1,10 @@
 <template>
   <span
-    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border"
+    class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border"
     :class="classes"
   >
-    <span class="w-1.5 h-1.5 rounded-full mr-1.5" :class="dotClass"></span>
-    {{ label }}
+    <span class="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" :class="dotClass"></span>
+    <span>{{ label }}</span>
   </span>
 </template>
 
@@ -37,20 +37,20 @@ const label = computed(() => {
 
 const classes = computed(() => {
   if (props.isOverdue) {
-    return 'bg-rose-50 text-rose-700 border-rose-300';
+    return 'bg-rose-50/80 text-rose-700 border-rose-200';
   }
   if (props.status === 'tersedia') {
-    return 'bg-emerald-50 text-emerald-700 border-emerald-300';
+    return 'bg-emerald-50/80 text-emerald-700 border-emerald-200';
   }
   if (props.status === 'dipinjam') {
-    return 'bg-amber-50 text-amber-800 border-amber-300';
+    return 'bg-amber-50/80 text-amber-700 border-amber-200';
   }
-  return 'bg-slate-100 text-slate-700 border-slate-300';
+  return 'bg-slate-50 text-slate-700 border-slate-200';
 });
 
 const dotClass = computed(() => {
   if (props.isOverdue) {
-    return 'bg-rose-500 animate-pulse';
+    return 'bg-rose-500';
   }
   if (props.status === 'tersedia') {
     return 'bg-emerald-500';
@@ -61,4 +61,3 @@ const dotClass = computed(() => {
   return 'bg-slate-400';
 });
 </script>
-

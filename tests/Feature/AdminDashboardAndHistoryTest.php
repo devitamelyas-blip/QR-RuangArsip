@@ -71,6 +71,7 @@ test('admin dapat melihat halaman riwayat peminjaman dengan filter', function ()
             ->component('Admin/Loans/Index')
             ->has('loans.data', 1)
             ->where('loans.data.0.nama_peminjam', 'Sari Indah')
+            ->where('loans.data.0.bantex.slug', $bantex->slug)
         );
 });
 
@@ -92,4 +93,47 @@ test('admin dapat mengekspor riwayat peminjaman ke format csv', function () {
     $response->assertHeader('content-type', 'text/csv; charset=UTF-8');
     expect($response->streamedContent())->toContain('Export User Test');
     expect($response->streamedContent())->toContain('SCM/GP/R-01/01/HCGA/GA/99');
+});
+
+test('admin dapat mengekspor riwayat peminjaman ke format excel xlsx', function () {
+    $admin = User::factory()->create();
+    $bantex = Bantex::factory()->create([
+        'kode_bantex' => 'SCM/GP/R-01/01/HCGA/GA/01',
+    ]);
+
+    Peminjaman::factory()->create([
+        'bantex_id' => $bantex->id,
+        'nama_peminjam' => 'Staf Pengadaan Test',
+        'keperluan' => 'Pemeriksaan Export Excel XLSX',
+    ]);
+
+    $response = $this->actingAs($admin)->get(route('admin.loans.export', ['format' => 'xlsx']));
+
+    $response->assertOk();
+    $response->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+});
+
+test('admin dapat mencari riwayat berdasarkan nama pengadaan dokumen di dalam bantex', function () {
+    $admin = User::factory()->create();
+    $bantex = Bantex::factory()->create();
+    $bantex->dokumen()->create([
+        'nama_pengadaan' => 'Pengadaan Baut Khusus Airframe Boeing',
+        'no_pengadaan' => 'PO-BOEING-2026-99',
+        'tahun' => 2026,
+    ]);
+
+    Peminjaman::factory()->create([
+        'bantex_id' => $bantex->id,
+        'nama_peminjam' => 'Teknisi Hanggar',
+        'keperluan' => 'Perbaikan rutin',
+    ]);
+
+    $response = $this->actingAs($admin)->get(route('admin.loans.index', ['search' => 'Airframe Boeing']));
+
+    $response->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Admin/Loans/Index')
+            ->has('loans.data', 1)
+            ->where('loans.data.0.nama_peminjam', 'Teknisi Hanggar')
+        );
 });

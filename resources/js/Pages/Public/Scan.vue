@@ -1,17 +1,18 @@
 <template>
   <PublicLayout>
-    <Head :title="`Bantex ${bantex.kode_bantex}`" />
+    <Head :title="`Bantex ${bantex.kode_bantex} — Ruang Arsip SCM Pelita Air`" />
 
-    <div class="space-y-5 pb-8">
-      <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-200">
+    <div class="space-y-4 pb-8">
+      <!-- Location & Identity Card -->
+      <div class="bg-white rounded-lg p-5 shadow-2xs border border-slate-200">
         <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
           <div class="min-w-0">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-1">
-              Kode Lokasi Bantex
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-1">
+              Kode Lokasi Bantex SCM
             </span>
-            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight break-all font-mono">
+            <h1 class="text-xl sm:text-2xl font-extrabold text-[#0A2540] tracking-tight break-all font-mono">
               {{ bantex.kode_bantex }}
-            </h2>
+            </h1>
           </div>
           <StatusBadge
             :status="bantex.status"
@@ -19,118 +20,135 @@
           />
         </div>
 
+        <!-- 4-Col Location Details -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-3 border-t border-slate-100 text-xs">
-          <div class="bg-slate-50 rounded-xl p-2.5">
-            <span class="text-slate-500 block text-[10px] uppercase font-bold">Tim</span>
-            <span class="font-bold text-slate-800 text-sm">{{ bantex.tim }}</span>
+          <div class="bg-slate-50 rounded-md p-2.5 border border-slate-200">
+            <span class="text-slate-500 block text-[10px] uppercase font-bold">Kelompok / Tim</span>
+            <span class="font-bold text-slate-800 text-sm">Tim {{ bantex.tim }}</span>
           </div>
-          <div class="bg-slate-50 rounded-xl p-2.5">
+          <div class="bg-slate-50 rounded-md p-2.5 border border-slate-200">
             <span class="text-slate-500 block text-[10px] uppercase font-bold">Nomor Rak</span>
             <span class="font-bold text-slate-800 text-sm">{{ bantex.nomor_rak }}</span>
           </div>
-          <div class="bg-slate-50 rounded-xl p-2.5">
-            <span class="text-slate-500 block text-[10px] uppercase font-bold">Baris</span>
+          <div class="bg-slate-50 rounded-md p-2.5 border border-slate-200">
+            <span class="text-slate-500 block text-[10px] uppercase font-bold">Baris Rak</span>
             <span class="font-bold text-slate-800 text-sm">{{ bantex.baris }}</span>
           </div>
-          <div class="bg-slate-50 rounded-xl p-2.5">
-            <span class="text-slate-500 block text-[10px] uppercase font-bold">Posisi</span>
+          <div class="bg-slate-50 rounded-md p-2.5 border border-slate-200">
+            <span class="text-slate-500 block text-[10px] uppercase font-bold">Posisi Urutan</span>
             <span class="font-bold text-slate-800 text-sm">{{ bantex.urutan_bantex }}</span>
           </div>
         </div>
 
-        <div v-if="bantex.keterangan_lokasi" class="mt-3 text-xs text-slate-600 bg-blue-50/70 border border-blue-100/80 rounded-xl p-2.5 flex items-start space-x-2">
-          <svg class="w-4 h-4 text-blue-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div v-if="bantex.keterangan_lokasi" class="mt-3 text-xs text-slate-700 bg-blue-50/70 border border-blue-100 rounded-md p-2.5 flex items-start space-x-2">
+          <svg class="w-4 h-4 text-blue-700 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <div>
-            <span class="font-semibold text-blue-900">Petunjuk Lokasi: </span>
+            <span class="font-semibold text-blue-900">Petunjuk Lokasi Fisik: </span>
             <span>{{ bantex.keterangan_lokasi }}</span>
           </div>
         </div>
       </div>
 
+      <!-- State E: Pengembalian Dokumen (Jika Status: Sedang Dipinjam) -->
       <div
         v-if="bantex.status === 'dipinjam' && bantex.peminjaman_aktif"
-        class="bg-amber-50/80 rounded-2xl p-5 border border-amber-200/90 shadow-xs"
+        class="bg-white rounded-lg p-5 border border-amber-200 shadow-2xs"
       >
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="text-sm font-bold text-amber-900 flex items-center">
-            <svg class="w-4 h-4 mr-1.5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-            Sedang Dipinjam
-          </h3>
+        <div class="flex items-center justify-between pb-3 border-b border-amber-100 mb-3">
+          <div class="flex items-center space-x-2">
+            <div class="w-6 h-6 rounded bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-xs">
+              !
+            </div>
+            <h2 class="text-sm font-bold text-amber-900">
+              Dokumen Sedang Dipinjam
+            </h2>
+          </div>
           <span
             v-if="bantex.peminjaman_aktif.is_overdue"
-            class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-rose-100 text-rose-800 border border-rose-300"
+            class="text-[11px] font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200"
           >
             Terlambat ({{ bantex.peminjaman_aktif.lama_pinjam_hari }} hari)
           </span>
-          <span v-else class="text-[11px] text-amber-800 font-medium">
+          <span v-else class="text-[11px] text-amber-800 font-medium bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
             Dipinjam {{ bantex.peminjaman_aktif.lama_pinjam_hari }} hari lalu
           </span>
         </div>
 
-        <div class="space-y-2 text-xs text-slate-800 bg-white/80 rounded-xl p-3 border border-amber-100">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-slate-50 rounded-md p-3.5 border border-slate-200">
           <div>
-            <span class="text-slate-500 font-medium">Nama Peminjam:</span>
+            <span class="text-slate-500 font-medium block text-[11px]">Nama Peminjam:</span>
             <p class="font-bold text-slate-900 text-sm mt-0.5">{{ bantex.peminjaman_aktif.nama_peminjam }}</p>
           </div>
           <div>
-            <span class="text-slate-500 font-medium">Keperluan:</span>
-            <p class="text-slate-700 mt-0.5 whitespace-pre-line">{{ bantex.peminjaman_aktif.keperluan }}</p>
+            <span class="text-slate-500 font-medium block text-[11px]">Waktu Peminjaman:</span>
+            <p class="text-slate-800 font-medium mt-0.5">{{ bantex.peminjaman_aktif.tanggal_pinjam }}</p>
           </div>
-          <div>
-            <span class="text-slate-500 font-medium">Waktu Pinjam:</span>
-            <p class="text-slate-700 mt-0.5">{{ bantex.peminjaman_aktif.tanggal_pinjam }}</p>
+          <div class="sm:col-span-2">
+            <span class="text-slate-500 font-medium block text-[11px]">Keperluan Peminjaman:</span>
+            <p class="text-slate-700 mt-0.5 whitespace-pre-line leading-relaxed">{{ bantex.peminjaman_aktif.keperluan }}</p>
           </div>
         </div>
 
-        <div class="mt-4">
+        <div class="mt-4 pt-3 border-t border-slate-100">
           <button
             type="button"
             @click="showReturnModal = true"
-            class="w-full py-3.5 px-4 rounded-xl font-bold text-sm text-white bg-emerald-600 hover:bg-emerald-700 active:scale-98 transition shadow-xs flex items-center justify-center space-x-2"
+            class="w-full py-2.5 px-4 rounded-md font-semibold text-xs text-white bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 transition shadow-2xs flex items-center justify-center space-x-1.5 focus:outline-none"
           >
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
-            <span>Kembalikan Dokumen ke Rak</span>
+            <span>Konfirmasi Pengembalian ke Rak</span>
           </button>
           <p class="text-[11px] text-center text-slate-500 mt-2">
-            Pastikan bantex sudah dikembalikan tepat pada posisi raknya sebelum mengonfirmasi.
+            Pastikan berkas bantex sudah diletakkan kembali pada rak dan baris yang tepat sebelum mengonfirmasi.
           </p>
         </div>
       </div>
 
+      <!-- State D: Form Peminjaman Dokumen (Jika Status: Tersedia) -->
       <div
         v-if="bantex.status === 'tersedia'"
-        class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs"
+        class="bg-white rounded-lg p-5 border border-slate-200 shadow-2xs"
       >
-        <div class="mb-4">
-          <h3 class="text-base font-bold text-slate-900 flex items-center">
-            <svg class="w-5 h-5 mr-1.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Form Peminjaman Bantex
-          </h3>
+        <div class="pb-3 border-b border-slate-100 mb-4">
+          <h2 class="text-sm font-bold text-[#0A2540]">
+            Formulir Peminjaman Dokumen
+          </h2>
           <p class="text-xs text-slate-500 mt-0.5">
-            Isi identitas Anda untuk mencatat pengambilan dokumen dari rak arsip.
+            Lengkapi data peminjam sebelum mengambil fisik bantex dari ruang arsip.
           </p>
         </div>
 
-        <form @submit.prevent="submitBorrow" class="space-y-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">
-              Kode Bantex (Otomatis)
-            </label>
-            <input
-              type="text"
-              :value="bantex.kode_bantex"
-              readonly
-              tabindex="-1"
-              class="w-full rounded-xl bg-slate-100 border border-slate-200 text-slate-600 text-xs font-mono font-bold px-3.5 py-2.5 cursor-not-allowed select-none focus:outline-none"
-            />
+        <form @submit.prevent="submitBorrow" class="space-y-3.5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">
+                Kode Bantex (Otomatis dari Sistem)
+              </label>
+              <input
+                type="text"
+                :value="bantex.kode_bantex"
+                readonly
+                tabindex="-1"
+                class="w-full rounded-md bg-slate-50 border border-slate-200 text-slate-700 text-xs font-mono font-bold px-3 py-2 cursor-not-allowed select-none focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">
+                Tanggal & Waktu Peminjaman
+              </label>
+              <input
+                type="text"
+                :value="todayFormatted"
+                readonly
+                tabindex="-1"
+                class="w-full rounded-md bg-slate-50 border border-slate-200 text-slate-600 text-xs px-3 py-2 cursor-not-allowed select-none focus:outline-none font-medium"
+              />
+            </div>
           </div>
 
           <div>
@@ -143,8 +161,8 @@
               type="text"
               required
               placeholder="Contoh: Budi Santoso (HCGA)"
-              class="w-full rounded-xl border-slate-300 text-sm focus:border-blue-600 focus:ring-blue-600 px-3.5 py-2.5 transition"
-              :class="{ 'border-rose-300 focus:border-rose-500 focus:ring-rose-500': borrowForm.errors.nama_peminjam }"
+              class="w-full rounded-md border-slate-300 text-xs focus:border-[#0A2540] focus:ring-[#0A2540] px-3 py-2 transition"
+              :class="{ 'border-rose-300': borrowForm.errors.nama_peminjam }"
             />
             <p v-if="borrowForm.errors.nama_peminjam" class="text-xs text-rose-600 mt-1">
               {{ borrowForm.errors.nama_peminjam }}
@@ -160,69 +178,71 @@
               v-model="borrowForm.keperluan"
               rows="3"
               required
-              placeholder="Contoh: Audit berkas pengadaan genset 2025 bersama auditor eksternal"
-              class="w-full rounded-xl border-slate-300 text-sm focus:border-blue-600 focus:ring-blue-600 px-3.5 py-2.5 transition"
-              :class="{ 'border-rose-300 focus:border-rose-500 focus:ring-rose-500': borrowForm.errors.keperluan }"
+              placeholder="Contoh: Audit berkas pengadaan fisik bersama tim auditor eksternal"
+              class="w-full rounded-md border-slate-300 text-xs focus:border-[#0A2540] focus:ring-[#0A2540] px-3 py-2 transition"
+              :class="{ 'border-rose-300': borrowForm.errors.keperluan }"
             ></textarea>
             <p v-if="borrowForm.errors.keperluan" class="text-xs text-rose-600 mt-1">
               {{ borrowForm.errors.keperluan }}
             </p>
           </div>
 
-          <button
-            type="submit"
-            :disabled="borrowForm.processing"
-            class="w-full py-3.5 px-4 rounded-xl font-bold text-sm text-white bg-blue-600 hover:bg-blue-700 active:scale-98 transition shadow-xs flex items-center justify-center space-x-2 disabled:opacity-50"
-          >
-            <span v-if="borrowForm.processing" class="inline-flex items-center">
-              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+          <div class="pt-1">
+            <button
+              type="submit"
+              :disabled="borrowForm.processing"
+              class="w-full py-2.5 px-4 rounded-md font-semibold text-xs text-white bg-[#0A2540] hover:bg-[#14385C] active:bg-[#07182C] transition shadow-2xs flex items-center justify-center space-x-2 disabled:opacity-50 focus:outline-none"
+            >
+              <svg
+                v-if="borrowForm.processing"
+                class="animate-spin -ml-0.5 mr-1.5 h-3.5 w-3.5 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
               </svg>
-              Menyimpan Peminjaman...
-            </span>
-            <span v-else class="inline-flex items-center space-x-1.5">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-              </svg>
-              <span>Pinjam Dokumen Sekarang</span>
-            </span>
-          </button>
+              <span>{{ borrowForm.processing ? 'Menyimpan Transaksi...' : 'Konfirmasi Peminjaman Dokumen' }}</span>
+            </button>
+          </div>
         </form>
       </div>
 
-      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="text-sm font-bold text-slate-900 flex items-center">
-            <svg class="w-4 h-4 mr-1.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-            </svg>
-            Daftar Dokumen dalam Bantex
-          </h3>
-          <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-            {{ bantex.dokumen.length }} Dokumen
+      <!-- Daftar Dokumen di dalam Bantex -->
+      <div class="bg-white rounded-lg p-5 border border-slate-200 shadow-2xs">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+          <div>
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">
+              Daftar Berkas Dokumen di dalam Bantex
+            </h3>
+            <p class="text-[11px] text-slate-500">
+              Daftar seluruh berkas pengadaan yang tercatat dalam unit bantex ini.
+            </p>
+          </div>
+          <span class="text-xs font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+            {{ bantex.dokumen.length }} Berkas
           </span>
         </div>
 
-        <div v-if="bantex.dokumen.length === 0" class="text-center py-6 text-xs text-slate-500">
-          Belum ada berkas dokumen yang dicatat di dalam bantex ini.
+        <div v-if="bantex.dokumen.length === 0" class="text-center py-8 text-xs text-slate-400">
+          Belum ada berkas dokumen yang terdata di dalam bantex ini.
         </div>
 
-        <div v-else class="space-y-2.5">
+        <div v-else class="space-y-2">
           <div
             v-for="(doc, idx) in bantex.dokumen"
             :key="doc.id"
-            class="bg-slate-50 rounded-xl p-3 border border-slate-100 flex items-start space-x-3"
+            class="bg-slate-50/70 rounded-md p-3 border border-slate-200 flex items-start space-x-3"
           >
-            <div class="w-6 h-6 rounded-lg bg-blue-100 text-blue-800 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+            <div class="w-6 h-6 rounded bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
               {{ idx + 1 }}
             </div>
             <div class="min-w-0 flex-1">
               <div class="flex items-baseline justify-between gap-2">
-                <span class="font-mono text-xs font-bold text-blue-700">
+                <span class="font-mono text-xs font-bold text-blue-800">
                   {{ doc.no_pengadaan }}
                 </span>
-                <span class="text-[11px] font-semibold text-slate-500">
+                <span class="text-[11px] font-medium text-slate-500">
                   Tahun {{ doc.tahun }}
                 </span>
               </div>
@@ -235,11 +255,12 @@
       </div>
     </div>
 
+    <!-- Confirm Modal Pengembalian -->
     <ConfirmModal
       :show="showReturnModal"
       title="Konfirmasi Pengembalian Bantex"
-      :message="`Apakah bantex '${bantex.kode_bantex}' telah dikembalikan ke posisi ${bantex.nomor_rak}, ${bantex.baris}? Tindakan ini akan mengubah status kembali menjadi 'Tersedia'.`"
-      confirm-text="Ya, Sudah Dikembalikan"
+      :message="`Apakah berkas bantex '${bantex.kode_bantex}' telah benar-benar dikembalikan ke posisi rak ${bantex.nomor_rak}, ${bantex.baris}? Transaksi pengembalian akan dicatat sekarang.`"
+      confirm-text="Ya, Dokumen Sudah Kembali"
       cancel-text="Batal"
       variant="emerald"
       :loading="returnForm.processing"
@@ -250,7 +271,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import StatusBadge from '@/Components/StatusBadge.vue';
@@ -261,6 +282,15 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+});
+
+const todayFormatted = computed(() => {
+  const d = new Date();
+  return d.toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
 });
 
 const showReturnModal = ref(false);
